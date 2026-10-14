@@ -20,6 +20,26 @@ generate or version. Load a file with **Load Floor Plan…** in the menu bar ico
 Everything is in metres, seen from above: `x` grows to the right (east), `z` grows downwards (south).
 Heights (`y`, `sill`, `head`) are metres above the floor. Angles are degrees.
 
+Coordinates describe the plan orientation; they do not establish compass bearings for a supplied home.
+
+## Multiple floors and mapped equipment
+
+Plans may define `levels: [{ "id": "ground", "name": "Ground", "elevation": 0 },
+{ "id": "loft", "name": "Bedroom loft", "elevation": 2.75 }]` and `defaultLevel: "ground"`.
+Rooms, furniture and openings carry a `level` id. Lights, ACs and mapped devices inherit their
+floor from their `room`. Items without a level belong to the first floor, preserving older plans.
+Each floor renders separately with its own bounds; elevation records the physical relationship
+without hiding the ground floor under the upper slab.
+
+Optional `devices` inventory entries have `id`, `name`, `room`, `pos`, `brand`, `kind`, `notes`
+and an optional furniture `model`, with `y` and `rot` for placement. They appear as inspectable
+**Mapped · not connected** tiles. This collection records equipment, not live integrations;
+only the existing linked light and AC schemas issue commands.
+
+Optional `survey` metadata records `basis`, `scale`, `unverified` (an array), and `online.summary`.
+The panel shows these in **Plan details**, alongside room dimensions marked as estimates.
+The personalized [Loft 113 plan](loft113.md) demonstrates this format.
+
 ## A complete small example
 
 ```jsonc
@@ -82,7 +102,10 @@ Heights (`y`, `sill`, `head`) are metres above the floor. Angles are degrees.
 | `id` | Unique. Lights and ACs refer to it |
 | `name` | Shown in the room filter |
 | `rect` | `[x, z, width, depth]` |
-| `floor` | `oak`, `walnut`, `tile` or `stone` |
+| `floor` | `oak`, `walnut`, `tile`, `stone`, `carpet`, `deck` or `grass` |
+| `level` | Floor id; defaults to the first floor |
+| `wallHeight` | Optional per-room outer wall height for double-height spaces or patio fencing |
+| `outdoor` | Optional annotation to exclude a patio from interior area calculations |
 
 Rooms are rectangles. Where two of them touch, an inner wall appears on its own; make an L-shaped room out of two.
 
@@ -99,10 +122,16 @@ A gap in a wall, given by its two end points on that wall. It must be horizontal
 ## `furniture`
 
 Decoration only. Every piece has `type`, `pos` (`[x, z]` of its centre) and an optional `rot`.
+Optional `level` selects a floor and `y` lifts a piece above that floor. The library also contains
+stairs, railings, counters, stools, glazing, a racing rig, fireplace, piano, laundry, bamboo,
+mirrors, shower, art, fire bowl and small equipment models. `stairs` accepts `width`, `depth`,
+`height` and `steps`; `railing` accepts `width`, `height` and `solid`; `vanity` accepts `basins: 2`.
 
 | `type` | Extra options |
 | --- | --- |
 | `sofa` | `width`, `color` |
+| `sectional` | One continuous L-shaped couch; `width`, `depth`, `color`. Return on local left before rotation. |
+| `laundry` | `stacked` (default `true`); `false` places two machines side by side and widens the editor footprint. |
 | `armchair` | `color` |
 | `coffeeTable` | `width` |
 | `rug` | `size` (`[width, depth]`), `color` |
@@ -122,11 +151,12 @@ Decoration only. Every piece has `type`, `pos` (`[x, z]` of its centre) and an o
 | `id` | Unique |
 | `name` | Shown on the tile |
 | `room` | The `id` of its room |
-| `type` | `ceiling`, `pendant`, `spots`, `floor`, `table` or `strip` |
+| `type` | `ceiling`, `pendant`, `spots`, `floor`, `table`, `strip`, `rope`, `string` or `tree` |
 | `pos` | `[x, z]` |
 | `y` | Height, if the default for the type does not fit |
 | `rot` | Rotation, for strips and spots |
-| `length` | Length of a `strip` |
+| `length` | Length of a `strip` or `string` |
+| `size` | `[width, depth]` of a rectangular `rope` |
 | `capabilities` | Any of `brightness`, `temp`, `color`. Leave it out for a plain smart plug that only switches |
 | `color` | Initial colour of a colour light |
 | `link`, `tuya` | Link to a real device — see below |

@@ -275,3 +275,7 @@ html.mode-island #app { display: block; padding: 0; height: 100%; }
   .isle-glow { transform: none; }
 }
 
+.isle-floors { display: flex; gap: 5px; margin-bottom: 8px; }
+.isle-floors[hidden], .chip[hidden] { display: none; }
+.isle-floors button { padding: 5px 8px; border-radius: 8px; color: #adb5c5; font-size: 10px; background: #ffffff0d; }
+.isle-floors button[aria-pressed=true] { color: #ead5b2; background: #ffffff1c; }

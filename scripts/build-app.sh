@@ -13,13 +13,13 @@ BUILD="${BUILD:-$(sed -n 's/^CURRENT_PROJECT_VERSION *= *//p' "$ROOT/ios/Config/
 echo "▸ Building web UI"
 cd "$ROOT/web"
 [ -d node_modules ] || npm install
-npm run build --silent
+node node_modules/vite/bin/vite.js build
 
 echo "▸ Building native shell"
 cd "$ROOT/macos"
 ARCH_FLAGS=()
 [ -n "${UNIVERSAL:-}" ] && ARCH_FLAGS=(--arch arm64 --arch x86_64)
-swift build -c release ${ARCH_FLAGS[@]+"${ARCH_FLAGS[@]}"} 2>&1 | grep -E "error|warning: unused|Build complete" || true
+swift build -c release ${ARCH_FLAGS[@]+"${ARCH_FLAGS[@]}"}
 BIN="$(swift build -c release ${ARCH_FLAGS[@]+"${ARCH_FLAGS[@]}"} --show-bin-path)/HouseControl"
 [ -x "$BIN" ] || { echo "Swift build failed"; exit 1; }
 

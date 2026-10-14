@@ -265,3 +265,6 @@ html.mode-editor, html.mode-editor body { user-select: none; }
   .press-button span { animation: none; box-shadow: 0 0 0 3px rgba(60, 140, 255, 0.55); }
   .note.busy .icon { animation-duration: 2.4s; }
 }
+.editor-level { color: #eddfc9; background: #293344; border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; max-width: 155px; }
+.p-device rect { fill: #96bac6; stroke: #dbe8ed; stroke-width: .018; cursor: move; }
+.p-device.sel rect { stroke: #ffdd96; stroke-width: .06; }

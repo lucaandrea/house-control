@@ -8,6 +8,7 @@ import { buildHouse } from './house.js';
 import { buildFurniture } from './furniture.js';
 import { LightUnit } from './lights.js';
 import { ACUnit } from './ac.js';
+import { configForLevel } from '../config.js';
 
 export const STAGE_BG = '#0a0e1a';
 
@@ -43,27 +44,47 @@ export function createWorld(canvas, config, store, { onHover, onPick, background
 
   /* ---------- content ---------- */
 
-  const house = buildHouse(config, camDir);
-  scene.add(house.group);
-  scene.add(buildFurniture(config.furniture));
-
+  const levelGroups = new Map();
   const lights = new Map();
-  for (const cfg of config.lights) {
-    const unit = new LightUnit(cfg, H);
-    lights.set(cfg.id, unit);
-    scene.add(unit.group);
-  }
   const acs = new Map();
-  for (const cfg of config.acs) {
-    const unit = new ACUnit(cfg);
-    acs.set(cfg.id, unit);
-    scene.add(unit.group);
+  const hitTargets = [];
+  let activeLevel = config.defaultLevel;
+  for (const level of config.levels) {
+    const cfg = configForLevel(config, level.id);
+    const root = new THREE.Group();
+    root.visible = level.id === activeLevel;
+    levelGroups.set(level.id, root);
+    scene.add(root);
+    const house = buildHouse(cfg, camDir);
+    root.add(house.group, buildFurniture(cfg.furniture));
+    hitTargets.push(...house.floors);
+    let shadows = 0;
+    for (const l of cfg.lights) {
+      const room = cfg.rooms.find((r) => r.id === l.room);
+      const unit = new LightUnit(l, room.wallHeight ?? H);
+      // A small shadow budget keeps the densely furnished loft usable on the phone.
+      unit.group.traverse((o) => { if (o.isLight && o.castShadow && shadows++ >= 4) o.castShadow = false; });
+      lights.set(l.id, unit); root.add(unit.group); hitTargets.push(unit.hit);
+    }
+    for (const a of cfg.acs) {
+      const unit = new ACUnit(a);
+      acs.set(a.id, unit); root.add(unit.group); hitTargets.push(unit.hit);
+    }
+    for (const d of cfg.devices) {
+      if (d.model) root.add(buildFurniture([{ ...d, type: d.model }]));
+      const hit = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.4, 0.34), new THREE.MeshBasicMaterial({ visible: false }));
+      hit.position.set(d.pos[0], (d.y || 0) + 0.2, d.pos[1]);
+      hit.userData = { kind: 'device', id: d.id };
+      root.add(hit); hitTargets.push(hit);
+    }
   }
-  const hitTargets = [...[...lights.values()].map((u) => u.hit), ...[...acs.values()].map((u) => u.hit), ...house.floors];
+  // Hit meshes themselves are deliberately invisible. Only their floor's ancestors
+  // determine whether they may be picked.
+  const isVisible = (object) => { for (let o = object.parent; o; o = o.parent) if (!o.visible) return false; return true; };
 
   // Night-time ambience: enough to read the model with every lamp off.
-  scene.add(new THREE.HemisphereLight(0x8ea6ff, 0x0b0e17, 0.42));
-  const moon = new THREE.DirectionalLight(0xa9c0ff, 0.6);
+  scene.add(new THREE.HemisphereLight(0xd7e3ff, 0x32302c, config.survey ? 1.15 : 0.42));
+  const moon = new THREE.DirectionalLight(0xcad8ff, config.survey ? 1.2 : 0.6);
   // Steep and coming from the viewer's side, so the faces we look at stay readable.
   moon.position.copy(center).add(new THREE.Vector3(camDir.x * 3.2 + 1.5, 10, camDir.z * 3.2 - 1.5));
   moon.target.position.copy(center);
@@ -131,6 +152,7 @@ export function createWorld(canvas, config, store, { onHover, onPick, background
 
   function frameGoal() {
     const f = rig.focus;
+    const levelConfig = configForLevel(config, activeLevel);
     let box;
     let fill = 0.96;
     if (f?.kind === 'room') {
@@ -145,7 +167,9 @@ export function createWorld(canvas, config, store, { onHover, onPick, background
         new THREE.Vector3(p.x + out.x * 1.3, 1.25, p.z + out.z * 1.3), new THREE.Vector3(3.6, 2.6, 3.6));
       fill = 0.92;
     } else {
-      box = new THREE.Box3(new THREE.Vector3(minX, 0, minZ), new THREE.Vector3(maxX, H * 0.8, maxZ));
+      const b = levelConfig.bounds;
+      const roof = Math.max(H, ...levelConfig.rooms.map((r) => r.wallHeight || H));
+      box = new THREE.Box3(new THREE.Vector3(b.minX, 0, b.minZ), new THREE.Vector3(b.maxX, roof * 0.65, b.maxZ));
     }
     const { dist, center: c } = fitDistance(box, rig.goal.az, rig.goal.el, fill);
     rig.goal.dist = dist * rig.zoom;
@@ -198,7 +222,7 @@ export function createWorld(canvas, config, store, { onHover, onPick, background
     const r = canvas.getBoundingClientRect();
     ndc.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
     raycaster.setFromCamera(ndc, camera);
-    const hits = raycaster.intersectObjects(hitTargets, false);
+    const hits = raycaster.intersectObjects(hitTargets.filter(isVisible), false);
     if (!hits.length) return null;
     // Devices win over the floor they stand on.
     const device = hits.find((h) => h.object.userData.kind !== 'room');
@@ -221,7 +245,7 @@ export function createWorld(canvas, config, store, { onHover, onPick, background
     if (same) return;
     const prev = unitOf(hovered);
     if (prev) prev.hoverGoal = 0;
-    hovered = t && t.kind !== 'room' ? t : null;
+    hovered = t && (t.kind === 'light' || t.kind === 'ac') ? t : null;
     const next = unitOf(hovered);
     if (next) next.hoverGoal = 1;
     canvas.style.cursor = hovered ? 'pointer' : drag?.moved ? 'grabbing' : 'grab';
@@ -356,7 +380,22 @@ export function createWorld(canvas, config, store, { onHover, onPick, background
     setInsets(top, bottom) { topInset = top; bottomInset = bottom; resize(); },
     resize,
 
+    get level() { return activeLevel; },
+    setLevel(id) {
+      if (!levelGroups.has(id)) return;
+      activeLevel = id;
+      for (const [key, g] of levelGroups) g.visible = key === id;
+      rig.focus = null;
+      rig.zoom = 1;
+      setHover(null);
+      shadowFrames = 3;
+      frameGoal();
+      wake(4);
+    },
     focus(next) {
+      const room = next?.kind === 'room' ? config.rooms.find((r) => r.id === next.id)
+        : next?.kind === 'ac' ? config.rooms.find((r) => r.id === acs.get(next.id)?.cfg.room) : null;
+      if (room && room.level !== activeLevel) world.setLevel(room.level);
       rig.focus = next;
       rig.zoom = 1;
       rig.goal.az = baseAz + (next?.kind === 'ac' ? (WALL_SIDE[acs.get(next.id).cfg.wall] ?? 0) : 0);

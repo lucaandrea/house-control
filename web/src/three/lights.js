@@ -63,6 +63,43 @@ function point(intensity, y, { shadow = true, distance = 0, x = 0, z = 0 } = {})
 
 // Each fixture: { parts: Mesh[], glow: Mesh[] (emissive when on), lights: Light[], hit: [w, h, d, y] }
 const fixtures = {
+  rope(cfg) {
+    const [w, d] = cfg.size || [2, 2.2];
+    const y = cfg.y ?? 0.12;
+    return {
+      parts: [],
+      glow: [at(box(w, 0.025, 0.025, glowMaterial()), 0, y, -d / 2),
+        at(box(w, 0.025, 0.025, glowMaterial()), 0, y, d / 2),
+        ...[-1, 1].map((side) => at(box(0.025, 0.025, d, glowMaterial()), side * w / 2, y, 0))],
+      lights: [point(2.5, y + 0.1, { shadow: false, distance: 3 })],
+      hit: [w, 0.25, d, y],
+    };
+  },
+  string(cfg) {
+    const length = cfg.length || 4;
+    const y = cfg.y ?? 2.2;
+    const glow = [], points = [];
+    for (let i = 0; i <= 16; i++) {
+      const x = -length / 2 + length * i / 16;
+      const h = y - Math.sin(Math.PI * i / 16) * 0.22;
+      points.push(new THREE.Vector3(x, h, 0));
+      if (i % 2 === 0) {
+        const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.035, 10, 8), glowMaterial());
+        bulb.position.set(x, h - 0.05, 0); glow.push(bulb);
+      }
+    }
+    const cable = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 24, 0.008, 5, false), mat(DARK));
+    return { parts: [cable], glow, lights: [point(3, y - 0.35, { shadow: false, distance: 5 })], hit: [length, 0.5, 0.25, y] };
+  },
+  tree(cfg) {
+    const parts = [at(cyl(0.14, 0.14, 0.035, mat(DARK)), 0, 0, 0), at(cyl(0.018, 0.018, 1.6, mat(DARK)), 0, 0.02, 0)];
+    const glow = [];
+    for (const [x, y] of [[-0.18, 1.1], [0.18, 1.35], [-0.14, 1.6]]) {
+      parts.push(at(box(Math.abs(x) * 2, 0.02, 0.02, mat(DARK)), x / 2, y, 0));
+      glow.push(at(cyl(0.08, 0.1, 0.12, glowMaterial()), x, y, 0));
+    }
+    return { parts, glow, lights: [point(3.4, 1.4, { shadow: false })], hit: [0.65, 1.8, 0.5, 0.9] };
+  },
   ceiling(cfg, H) {
     const y = cfg.y ?? H - 0.14;
     return {

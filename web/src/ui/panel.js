@@ -7,6 +7,7 @@ import { lightColor } from '../three/lights.js';
 import { MODE_COLORS } from '../three/ac.js';
 import { AC_SWINGS } from '../store.js';
 import { haptic, isPhone } from '../bridge.js';
+import { isLinked } from '../config.js';
 
 const MODE_LABEL = { cool: 'Cool', heat: 'Heat', dry: 'Dry', fan: 'Fan', auto: 'Auto' };
 const FAN_LABEL = { auto: 'Auto', low: 'Low', medium: 'Medium', high: 'High', turbo: 'Turbo' };
@@ -33,7 +34,9 @@ function acTemperatureColor(target, cfg) {
 
 export function createPanel(root, config, store, { onFocus, onMenu }) {
   const { state } = store;
-  const ui = { room: 'all', sheet: null };
+  const ui = { room: 'all', sheet: null, level: config.defaultLevel };
+  const roomLevel = (id) => config.rooms.find((r) => r.id === id)?.level;
+  const deviceIcon = (d) => ({ camera: 'camera', media: 'tv', computer: 'laptop', network: 'bridge', bridge: 'bridge', fan: 'fan', blind: 'box', bed: 'bed', speaker: 'activity', air: 'wind', sensor: 'thermo', appliance: 'box' })[d.kind] || 'box';
   let world = null;
   const roomName = new Map(config.rooms.map((r) => [r.id, r.name]));
 
@@ -43,6 +46,7 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
   const tooltip = h('div.tooltip');
   const homeSub = h('div.home-sub');
   const power = h('button.round.power', { title: 'Everything on / off', 'aria-label': 'Toggle everything', onclick: toggleEverything }, icon('power', 21, 2.2));
+  const expand = h('button.round.map-expand', { title: 'Open large home map', 'aria-label': 'Open large home map', onclick: () => onMenu(expand, 'map') }, icon('external', 17));
   const gear = h('button.round', { title: 'Floor plan', 'aria-label': 'Floor plan menu', onclick: () => onMenu(gear) }, icon('settings', 17));
   // Shown while an AI assistant has a link to this home (AI Access on the Mac).
   const aiBadge = h('button.ai-badge', { hidden: true, title: 'An AI assistant has access — click to manage', 'aria-label': 'AI access',
@@ -50,10 +54,12 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
 
   const scenes = h('div.scenes');
   const rooms = h('div.rooms');
+  const levelBar = h('div.levels', { 'aria-label': 'Floor' });
+  const planNote = config.survey ? h('button.plan-note', { onclick: () => openSheet({ kind: 'survey' }) }, 'Estimated dimensions · Plan details', icon('next', 12)) : null;
   const listTitle = h('span.title');
   const grid = h('div.grid');
   const panel = h('section.panel',
-    scenes, rooms,
+    levelBar, scenes, rooms, planNote,
     h('div.list-head', listTitle,
       h('button.pill', { onclick: () => bulk(true) }, 'All on'),
       h('button.pill', { onclick: () => bulk(false) }, 'All off')),
@@ -68,7 +74,7 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
     h('header.top',
       h('div.home', h('div.home-badge', icon('home', 17)),
         h('div', h('div.home-name', config.name), homeSub)),
-      aiBadge, gear, power),
+      aiBadge, expand, gear, power),
     tooltip, panel, sheet, toastEl);
   const card = h('div.card.booting', h('div.notch'), clip);
   root.replaceChildren(card);
@@ -83,6 +89,22 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
   }
   if (!config.scenes.length) scenes.style.display = 'none';
 
+  /* ---------- floors ---------- */
+
+  const levelButtons = new Map();
+  for (const level of config.levels) {
+    const b = h('button.level', { onclick: () => selectLevel(level.id), 'aria-pressed': String(level.id === ui.level) }, level.name);
+    levelButtons.set(level.id, b); levelBar.append(b);
+  }
+  levelBar.hidden = config.levels.length < 2;
+  function selectLevel(id) {
+    if (!config.levels.some((l) => l.id === id)) return;
+    closeSheet();
+    ui.level = id; ui.room = 'all';
+    world?.setLevel(id);
+    layoutTiles(); update();
+  }
+
   /* ---------- rooms ---------- */
 
   const roomButtons = new Map();
@@ -96,6 +118,7 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
   function selectRoom(id) {
     if (ui.room === id) id = 'all';
     ui.room = id;
+    if (id !== 'all') { ui.level = roomLevel(id); world?.setLevel(ui.level); }
     layoutTiles();
     update();
     roomButtons.get(id).b.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
@@ -103,13 +126,12 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
   }
 
   function inScope(cfg) {
-    return ui.room === 'all' || cfg.room === ui.room;
+    return roomLevel(cfg.room) === ui.level && (ui.room === 'all' || cfg.room === ui.room);
   }
 
   function bulk(on) {
     haptic('medium');
-    if (ui.room === 'all') { store.setAllLights(on); return; }
-    for (const l of config.lights) if (l.room === ui.room) store.setLight(l.id, { on });
+    for (const l of config.lights) if (inScope(l)) store.setLight(l.id, { on });
   }
 
   function toggleEverything() {
@@ -197,7 +219,7 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
         el.style.setProperty('--c', css(lightColor(s, tmp)));
         el.style.setProperty('--level', s.on ? String(s.brightness) : '0');
         // On a phone the group heading above the tile already names the room.
-        sub.textContent = ui.room === 'all' && !isPhone ? `${lightStatus(cfg, s)} · ${roomName.get(cfg.room)}` : lightStatus(cfg, s);
+        sub.textContent = `${!isLinked(cfg) ? 'Preview · ' : ''}${lightStatus(cfg, s)}${ui.room === 'all' && !isPhone ? ` · ${roomName.get(cfg.room)}` : ''}`;
       },
     };
   }
@@ -237,6 +259,11 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
 
   for (const cfg of config.acs) tiles.set(cfg.id, acTile(cfg));
   for (const cfg of config.lights) tiles.set(cfg.id, lightTile(cfg));
+  for (const cfg of config.devices) {
+    const el = h('button.tile.mapped', { onclick: () => openSheet({ kind: 'device', id: cfg.id }), 'aria-label': cfg.name },
+      h('div.bubble', icon(deviceIcon(cfg), 19)), h('div.tile-text', h('div.tile-name', cfg.name), h('div.tile-sub', 'Mapped · not connected')));
+    tiles.set(cfg.id, { cfg, el, kind: 'device', update() {} });
+  }
 
   function toggleLight(id) {
     haptic('light');
@@ -249,12 +276,13 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
     let i = 0;
     const add = (t) => { t.el.style.setProperty('--i', i++); nodes.push(t.el); };
     for (const room of config.rooms) {
-      if (ui.room !== 'all' && room.id !== ui.room) continue;
+      if (room.level !== ui.level || (ui.room !== 'all' && room.id !== ui.room)) continue;
       const devices = [...tiles.values()].filter((t) => t.cfg.room === room.id);
       if (!devices.length) continue;
       if (ui.room === 'all') nodes.push(h('div.group-label', room.name));
       devices.filter((t) => t.kind === 'ac').forEach(add);
       devices.filter((t) => t.kind === 'light').forEach(add);
+      devices.filter((t) => t.kind === 'device').forEach(add);
     }
     if (!nodes.length) nodes.push(h('div.group-label', 'No devices in this room yet'));
     else if (isPhone && config.lights.some((l) => l.capabilities.length && inScope(l))) {
@@ -270,7 +298,7 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
 
   function openSheet(target) {
     ui.sheet = target;
-    sheetView = target.kind === 'ac' ? acSheet(target.id) : lightSheet(target.id);
+    sheetView = target.kind === 'survey' ? surveySheet() : target.kind === 'device' ? mappedSheet(target.id) : target.kind === 'ac' ? acSheet(target.id) : lightSheet(target.id);
     sheet.replaceChildren(...sheetView.nodes);
     panel.classList.add('hidden');
     sheet.classList.remove('hidden');
@@ -278,7 +306,9 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
     sheet.inert = false;
     card.classList.add('detail');
     hideTooltip();
-    onFocus(target.kind === 'ac' ? target : { kind: 'room', id: store.lightCfg.get(target.id).room });
+    const room = target.kind === 'device' ? config.devices.find((d) => d.id === target.id)?.room : store.lightCfg.get(target.id)?.room;
+    if (room) { ui.level = roomLevel(room); world?.setLevel(ui.level); }
+    onFocus(target.kind === 'ac' ? target : room ? { kind: 'room', id: room } : null);
     update();
   }
 
@@ -294,6 +324,28 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
     onFocus(ui.room === 'all' ? null : { kind: 'room', id: ui.room });
     update();
     return true;
+  }
+
+  function mappedSheet(id) {
+    const d = config.devices.find((x) => x.id === id);
+    return { nodes: [sheetHead(d.name, h('div.sheet-sub', `${d.brand} · ${roomName.get(d.room)}`)),
+      h('div.plan-details', h('span.inventory-status', 'Mapped · not connected'),
+        h('p', d.notes || 'Placed from your equipment list. Exact position can be refined in the floor plan.'),
+        h('p', 'Live status and controls will appear only after a supported integration is connected.'),
+        h('p.muted', d.evidence))], update() {} };
+  }
+
+  function surveySheet() {
+    const survey = config.survey;
+    const dimension = (m) => `${m.toFixed(2)} m / ${(m * 3.28084).toFixed(1)} ft`;
+    return { nodes: [sheetHead('Plan details', h('div.sheet-sub', 'Photo-based model · dimensions estimated')),
+      h('div.plan-details', h('p', survey.basis), h('p', survey.scale),
+        survey.online ? h('p', survey.online.summary) : null,
+        h('h3', 'Room dimensions'),
+        ...config.levels.map((level) => h('section.dimension-section', h('h4', level.name),
+          ...config.rooms.filter((r) => r.level === level.id).map((r) => h('div.dimension-row',
+            h('b', r.name), h('span', `≈ ${dimension(r.w)} × ${dimension(r.d)}`))))),
+        h('h3', 'Still to verify'), ...(survey.unverified || []).map((note) => h('p', note)))], update() {} };
   }
 
   function sheetHead(name, sub, powerBtn) {
@@ -522,22 +574,24 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
 
     homeSub.replaceChildren(
       h('span.live', { style: anyOn ? {} : { background: 'rgba(255,255,255,.25)', boxShadow: 'none' } }),
-      h('b', onCount ? `${onCount} of ${lights.length}` : 'No'), ' lights on',
+      h('b', onCount ? `${onCount} of ${lights.length}` : 'No'), config.lights.some(isLinked) ? ' lights on' : ' preview lights on',
       acsOn.length ? ` · AC ${acsOn[0].target}°` : '');
     power.classList.toggle('on', anyOn);
 
     for (const [id, b] of sceneButtons) b.classList.toggle('active', state.scene === id);
 
+    for (const [id, b] of levelButtons) { b.classList.toggle('active', id === ui.level); b.setAttribute('aria-pressed', String(id === ui.level)); }
     for (const [id, { b, count }] of roomButtons) {
+      b.hidden = id !== 'all' && roomLevel(id) !== ui.level;
       b.classList.toggle('active', ui.room === id);
-      const n = config.lights.filter((l) => (id === 'all' || l.room === id) && state.lights[l.id].on).length;
+      const n = config.lights.filter((l) => roomLevel(l.room) === ui.level && (id === 'all' || l.room === id) && state.lights[l.id].on).length;
       count.textContent = n;
       count.classList.toggle('zero', n === 0 || id === 'all');
     }
 
     const scoped = config.lights.filter(inScope);
     const scopedOn = scoped.filter((l) => state.lights[l.id].on).length;
-    listTitle.replaceChildren(h('b', ui.room === 'all' ? 'Whole home' : roomName.get(ui.room)), ` · ${scopedOn} of ${scoped.length} on`);
+    listTitle.replaceChildren(h('b', ui.room === 'all' ? config.levels.find((l) => l.id === ui.level).name : roomName.get(ui.room)), ` · ${scopedOn} of ${scoped.length} on`);
 
     for (const t of tiles.values()) t.update();
     sheetView?.update();
@@ -561,6 +615,12 @@ export function createPanel(root, config, store, { onFocus, onMenu }) {
     openSheet,
     closeSheet,
     selectRoom,
+    selectLevel,
+    setMapExpanded(expanded) {
+      const label = expanded ? 'Return to controls' : 'Open large home map';
+      expand.title = label; expand.setAttribute('aria-label', label);
+      expand.replaceChildren(icon(expanded ? 'back' : 'external', 17));
+    },
     toggleLight,
     get room() { return ui.room; },
     setNotch(x) { card.style.setProperty('--notch-x', `${x}px`); },

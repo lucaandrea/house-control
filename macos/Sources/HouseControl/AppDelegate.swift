@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
     private var panel: PanelController!
     private var editor: EditorController?
+    private var mapWindow: MapController?
     private var pollTimer: Timer?
     /// AI Access: the private link an AI assistant uses to run the home.
     private lazy var agent: AgentController = {
@@ -55,6 +56,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         host.load()
         startSync()
         if islandEnabled { showIsland() }
+        if ProcessInfo.processInfo.environment["HOUSE_OPEN_MAP"] != nil { openMap() }
 
         // HOUSE_SNAPSHOT_DIR=<folder> writes panel.png and island.png there a few seconds
         // after launch: a look at the UI without a screen (see HOUSE_RENDER_HIDDEN).
@@ -64,6 +66,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
                 self?.panel.host.snapshot(to: directory.appendingPathComponent("panel.png"))
                 self?.island?.host.snapshot(to: directory.appendingPathComponent("island.png"))
+                self?.mapWindow?.host.snapshot(to: directory.appendingPathComponent("map.png"))
             }
         }
         if ProcessInfo.processInfo.environment["HOUSE_OPEN_PAIRING"] != nil {
@@ -158,6 +161,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             menu.addItem(withTitle: "Reveal Plan File", action: #selector(revealPlan), keyEquivalent: "").target = self
             menu.addItem(withTitle: "Reveal Device Log", action: #selector(revealLog), keyEquivalent: "").target = self
             menu.addItem(.separator())
+            menu.addItem(withTitle: "Open Home Map…", action: #selector(openMap), keyEquivalent: "").target = self
             let islandItem = menu.addItem(withTitle: "Show Island", action: #selector(toggleIsland), keyEquivalent: "")
             islandItem.target = self
             islandItem.state = island?.isShown == true ? .on : .off
@@ -222,6 +226,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func reloadAll() {
         reloadLinks()
         panel.host.load()
+        mapWindow?.host.load()
         if island?.isShown == true { island?.host.load() }
         sync.broadcast()
     }
@@ -240,6 +245,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } catch {
             alert("Could not load this floor plan", error.localizedDescription)
         }
+    }
+
+    @objc private func openMap() {
+        panel.hide()
+        if mapWindow == nil {
+            let host = WebHost(mode: "map", transparent: false) { [unowned self] in self.bootPayload() }
+            host.onMessage = { [weak self, unowned host] message in self?.handle(message, from: host) }
+            let controller = MapController(host: host)
+            controller.onClose = { [weak self] in
+                self?.mapWindow = nil
+                self?.setPolling(false)
+            }
+            mapWindow = controller
+            host.load()
+        }
+        mapWindow?.show()
+        setPolling(true)
     }
 
     @objc private func revealPlan() {
@@ -291,11 +313,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // shown by the other.
             var state = message
             state["type"] = nil
-            for other in [panel.host, island?.host] where other !== host { other?.call("adopt", state) }
+            for other in [panel.host, island?.host, mapWindow?.host] where other !== host { other?.call("adopt", state) }
         case "command":
             hub.command(message) { [weak host] in host?.reply(to: message, $0) }
         case "close":
-            panel.hide()
+            if host === mapWindow?.host { mapWindow?.close() }
+            else { panel.hide() }
         case "selectPlan":
             if let plan = message["plan"] as? String {
                 plans.select(plan)
@@ -306,6 +329,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         case "openAgent": openAgent()
         case "revealPlan": revealPlan()
         case "openEditor": openEditor()
+        case "openMap": openMap()
         case "quit": NSApp.terminate(nil)
 
         // Editor
@@ -443,7 +467,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// Real devices are read while there is something on screen to show them in.
     private func setPolling(_ requested: Bool) {
-        let on = requested || panel.isVisible || island?.isExpanded == true
+        let on = requested || panel.isVisible || island?.isExpanded == true || mapWindow?.isVisible == true
         pollTimer?.invalidate()
         pollTimer = nil
         guard on, hub.canPoll else { return }

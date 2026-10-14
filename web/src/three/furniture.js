@@ -2,6 +2,7 @@
 // centred on its footprint and facing +z; the plan's "rot" turns it from there.
 import * as THREE from 'three';
 import { box, cyl, mat, at, rng } from './kit.js';
+import { loftBuilders, loftFootprints } from './loft-furniture.js';
 
 const WOOD = '#a98459';
 const DARK_WOOD = '#5a4334';
@@ -63,6 +64,7 @@ function doorLines(width, height, y, z, count, material) {
 }
 
 const builders = {
+  ...loftBuilders,
   rug({ size = [2, 1.4], color = '#3b4a66' }) {
     const g = group(
       at(box(size[0], 0.016, size[1], mat(color, { rough: 1 }), { r: 0.006 }), 0, 0, 0),
@@ -78,6 +80,39 @@ const builders = {
     const pillow = at(box(0.36, 0.36, 0.12, mat('#d9b98a', { rough: 1 }), { r: 0.05 }), -width / 2 + 0.42, 0.46, -0.1);
     pillow.rotation.set(-0.25, 0.3, 0.1);
     g.add(pillow);
+    return g;
+  },
+
+  // One continuous L: the return runs forward from the left end of the back row.
+  // There is no arm or doubled backrest at the inside corner.
+  sectional({ width = 3, depth = 3.2, color = '#dfd9c9' }) {
+    const fabric = mat(color, { rough: 1 }), base = mat(darker(color, 0.82), { rough: 1 });
+    const seatDepth = 0.95, arm = 0.18;
+    const left = -width / 2, back = -depth / 2;
+    const g = group(
+      at(box(width, 0.2, seatDepth, base, { r: 0.05 }), 0, 0.1, back + seatDepth / 2),
+      at(box(seatDepth, 0.2, depth - seatDepth, base, { r: 0.05 }), left + seatDepth / 2, 0.1, seatDepth / 2),
+      at(box(width, 0.52, 0.22, base, { r: 0.07 }), 0, 0.3, back + 0.11),
+      at(box(0.22, 0.52, depth - 0.22, base, { r: 0.07 }), left + 0.11, 0.3, 0.11),
+      at(box(arm, 0.36, seatDepth, base, { r: 0.07 }), width / 2 - arm / 2, 0.3, back + seatDepth / 2),
+      at(box(seatDepth, 0.36, arm, base, { r: 0.07 }), left + seatDepth / 2, 0.3, depth / 2 - arm / 2),
+    );
+    const rowWidth = width - seatDepth - arm, rowCount = Math.max(1, Math.round(rowWidth / 0.7));
+    const returnLength = depth - 0.22 - arm, returnCount = Math.max(1, Math.round(returnLength / 0.7));
+    for (let i = 0; i < rowCount; i++) {
+      const x = left + seatDepth + rowWidth / rowCount * (i + 0.5);
+      g.add(at(box(rowWidth / rowCount - 0.025, 0.17, 0.68, fabric, { r: 0.06 }), x, 0.3, back + 0.59),
+        at(box(rowWidth / rowCount - 0.035, 0.34, 0.15, fabric, { r: 0.06 }), x, 0.46, back + 0.3));
+    }
+    for (let i = 0; i < returnCount; i++) {
+      const z = back + 0.22 + returnLength / returnCount * (i + 0.5);
+      g.add(at(box(0.68, 0.17, returnLength / returnCount - 0.025, fabric, { r: 0.06 }), left + 0.59, 0.3, z),
+        at(box(0.15, 0.34, returnLength / returnCount - 0.035, fabric, { r: 0.06 }), left + 0.3, 0.46, z));
+    }
+    for (const [x, z] of [[left + 0.12, back + 0.12], [width / 2 - 0.12, back + 0.12],
+      [width / 2 - 0.12, back + 0.83], [left + 0.12, depth / 2 - 0.12], [left + 0.83, depth / 2 - 0.12]]) {
+      g.add(at(cyl(0.025, 0.025, 0.1, mat(BLACK), 10), x, 0, z));
+    }
     return g;
   },
 
@@ -122,9 +157,9 @@ const builders = {
     );
   },
 
-  diningSet({ width = 1.8, chairs = 6 }) {
+  diningSet({ width = 1.8, chairs = 6, color = '#b48d63' }) {
     const depth = 0.95;
-    const wood = mat('#b48d63', { rough: 0.55 });
+    const wood = mat(color, { rough: 0.55 });
     const g = group(
       at(box(width, 0.05, depth, wood, { r: 0.02 }), 0, 0.71, 0),
       ...legs(width, depth, 0.71, mat(BLACK, { rough: 0.5 }), 0.1, 0.028),
@@ -217,10 +252,10 @@ const builders = {
     );
   },
 
-  dresser({ width = 1.3 }) {
+  dresser({ width = 1.3, color = WHITE }) {
     const g = group(
       ...legs(width, 0.45, 0.1, mat(BLACK), 0.06, 0.015),
-      at(box(width, 0.74, 0.45, mat(WHITE, { rough: 0.6 }), { r: 0.015 }), 0, 0.1, 0),
+      at(box(width, 0.74, 0.45, mat(color, { rough: 0.6 }), { r: 0.015 }), 0, 0.1, 0),
       at(cyl(0.09, 0.07, 0.18, mat('#c9a15e', { rough: 0.4 })), width / 2 - 0.3, 0.84, 0),
     );
     for (let i = 1; i < 3; i++) g.add(at(box(width - 0.06, 0.006, 0.005, mat('#b9b6ae'), { r: 0 }), 0, 0.1 + 0.247 * i, 0.226));
@@ -249,14 +284,17 @@ const builders = {
     return g;
   },
 
-  vanity({ width = 1.0 }) {
+  vanity({ width = 1.0, basins = 1 }) {
     const mirror = new THREE.MeshStandardMaterial({ color: '#b9c7dc', roughness: 0.12, metalness: 0.9 });
     return group(
       at(box(width, 0.62, 0.48, mat(WOOD, { rough: 0.6 }), { r: 0.012 }), 0, 0.2, 0),
       ...doorLines(width, 0.56, 0.23, 0.24, 2, mat(DARK_WOOD)),
       at(box(width + 0.03, 0.04, 0.5, mat(WHITE, { rough: 0.25 }), { r: 0.012 }), 0, 0.82, 0),
-      at(cyl(0.19, 0.15, 0.1, mat(WHITE, { rough: 0.2 })), 0, 0.86, 0.02),
-      at(cyl(0.012, 0.012, 0.2, mat(METAL, { rough: 0.2, metal: 0.9 }), 10), 0, 0.86, -0.18),
+      ...Array.from({ length: basins }, (_, i) => {
+        const x = (i - (basins - 1) / 2) * width / basins;
+        return group(at(cyl(0.19, 0.15, 0.1, mat(WHITE, { rough: 0.2 })), x, 0.86, 0.02),
+          at(cyl(0.012, 0.012, 0.2, mat(METAL, { rough: 0.2, metal: 0.9 }), 10), x, 0.86, -0.18));
+      }),
       at(box(width * 0.82, 0.8, 0.025, mirror, { r: 0.01 }), 0, 1.08, -0.225),
     );
   },
@@ -327,9 +365,15 @@ export const FURNITURE_TYPES = Object.keys(builders);
 // Approximate [width, depth] of each piece, for the 2D plan editor.
 export function footprint(item) {
   const w = item.width;
+  if (item.type === 'laundry') return [item.stacked === false ? 1.32 : 0.65, 0.74];
+  if (loftFootprints[item.type]) {
+    const [fw, fd] = loftFootprints[item.type];
+    return [w || fw, item.depth || fd];
+  }
   switch (item.type) {
     case 'rug': return item.size || [2, 1.4];
     case 'sofa': return [w || 2.2, 0.95];
+    case 'sectional': return [w || 3, item.depth || 3.2];
     case 'armchair': return [0.92, 0.88];
     case 'coffeeTable': return [w || 1.1, 0.58];
     case 'tv': return [w || 1.7, 0.4];
@@ -365,7 +409,7 @@ export function buildFurniture(items) {
     g.rotation.y = THREE.MathUtils.degToRad(item.rot || 0);
     const flat = g.userData.flat;
     g.traverse((o) => {
-      if (o.isMesh) { o.castShadow = !flat; o.receiveShadow = true; }
+      if (o.isMesh) { o.castShadow = !flat && !o.userData.noShadow; o.receiveShadow = true; }
     });
     root.add(g);
   }

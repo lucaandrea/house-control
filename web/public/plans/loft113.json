@@ -1,0 +1,2120 @@
+{
+  "name": "Loft 113",
+  "version": 2,
+  "wallHeight": 2.75,
+  "interiorWallHeight": 1.05,
+  "camera": {
+    "azimuth": -34,
+    "elevation": 59
+  },
+  "defaultLevel": "ground",
+  "levels": [
+    {
+      "id": "ground",
+      "name": "Ground + patio",
+      "elevation": 0
+    },
+    {
+      "id": "loft",
+      "name": "Bedroom loft",
+      "elevation": 2.75
+    }
+  ],
+  "survey": {
+    "status": "estimated",
+    "summary": "Owner markup round 2 applied · dimensions remain estimated",
+    "basis": "Unit 113 room sequence and equipment supplied by owner; 20 home photos (newer arrangements preferred); neighboring-unit plans 111 and 201; unit 113 rental listing; owner corrections on revision 1 and revision 2 review packets, pages 5 and 6.",
+    "scale": "Approximate interior width 5.41 m (17 ft 9 in), using unit 111 as the dimensional reference. Main interior depth 14.45 m; patio depth 4.65 m; loft elevation 2.75 m. These are estimates, not a survey.",
+    "confirmed": [
+      "Rear-facing ground-floor loft with a private patio, not an upstairs balcony.",
+      "Entrance nook and kitchen on the right; laundry and stairs on the left.",
+      "Bedroom loft overlooks the double-height living room.",
+      "Cream sectional, right-wall red fireplace column, left-wall media area, piano at rear left and computer desk at rear right.",
+      "One continuous L-shaped living-room couch; washer and dryer side by side.",
+      "Racing rig rotated 90 degrees clockwise; nook couch and patio chair rotated 90 degrees counterclockwise.",
+      "Upstairs double vanity on the left wall, shower on the right, toilet at the far end; HomePod follows the vanity.",
+      "Piano rotated toward the living area; dining set moved right; dresser added beneath the right-wall artwork.",
+      "Racing rig pushed toward the bathroom partition; reading nook contains a small couch.",
+      "Shower enclosure shown in the upstairs bathroom; marked ceiling globe removed; toilet rotated 90 degrees counterclockwise."
+    ],
+    "unverified": [
+      "Exact wall lengths, ceiling heights, stair rise/run, and door/window sizes.",
+      "Racing nook clearances, washer/dryer order and downstairs bathroom details remain estimates; orientation and side-by-side laundry corrected from owner markup.",
+      "Patio depth, precise bathroom fixture dimensions and upper closet configuration.",
+      "Exact smart-device names, counts within lighting circuits, connection identifiers, and live state."
+    ],
+    "references": [
+      "640x480.jpg (unit 111)",
+      "floorplan201.jpg (unit 201)",
+      "IMG_2969.jpeg–IMG_8416.jpeg (20 supplied photos)"
+    ],
+    "online": {
+      "reportedInteriorSqFt": 1309,
+      "source": "https://www.apartments.com/2412-harrison-st-san-francisco-ca-unit-2412-harrison-st-113/jf2s6h7/",
+      "checked": "2026-10-14",
+      "summary": "The unit 113 rental listing reports 1,309 sq ft, one loft bedroom and two full bathrooms. It confirms the entrance nook, patio, upstairs carpet, dual closets and double vanity. No dimensioned plan of 113 was found; modeled area is approximately 1,316 sq ft excluding the patio."
+    },
+    "annotationRevision": 3,
+    "annotationSource": "Owner-marked revision 2 annotation packet, pages 5 and 6, received October 14, 2026",
+    "pendingAnnotations": [
+      "Confirm type of Philips Hue fixture marked behind the reading-nook seating in revision 1.",
+      "Clarify the short red mark over the bedroom ceiling track in revision 1; fixture retained pending clarification."
+    ],
+    "resolvedAnnotations": [
+      "The newly labeled dining-table arrow replaces the earlier uncertain couch-shift interpretation; the sectional stays in place."
+    ]
+  },
+  "rooms": [
+    {
+      "id": "patio",
+      "name": "Patio",
+      "rect": [
+        0,
+        -4.65,
+        5.41,
+        4.65
+      ],
+      "level": "ground",
+      "floor": "deck",
+      "wallHeight": 1.85,
+      "outdoor": true
+    },
+    {
+      "id": "living",
+      "name": "Living",
+      "rect": [
+        0,
+        0,
+        5.41,
+        4.65
+      ],
+      "level": "ground",
+      "floor": "oak",
+      "wallHeight": 5.5
+    },
+    {
+      "id": "dining",
+      "name": "Dining",
+      "rect": [
+        0,
+        4.65,
+        5.41,
+        2.35
+      ],
+      "level": "ground",
+      "floor": "oak"
+    },
+    {
+      "id": "stairs",
+      "name": "Stairs",
+      "rect": [
+        0,
+        7,
+        1.05,
+        3
+      ],
+      "level": "ground",
+      "floor": "oak"
+    },
+    {
+      "id": "hall",
+      "name": "Hallway",
+      "rect": [
+        1.05,
+        7,
+        1.65,
+        5.1
+      ],
+      "level": "ground",
+      "floor": "oak"
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "rect": [
+        2.7,
+        7,
+        2.71,
+        3
+      ],
+      "level": "ground",
+      "floor": "oak"
+    },
+    {
+      "id": "laundry",
+      "name": "Laundry",
+      "rect": [
+        0,
+        10,
+        1.05,
+        2.1
+      ],
+      "level": "ground",
+      "floor": "tile"
+    },
+    {
+      "id": "bath",
+      "name": "Guest bath",
+      "rect": [
+        2.7,
+        10,
+        2.71,
+        2.1
+      ],
+      "level": "ground",
+      "floor": "tile"
+    },
+    {
+      "id": "entry",
+      "name": "Entrance",
+      "rect": [
+        0,
+        12.1,
+        2.7,
+        2.35
+      ],
+      "level": "ground",
+      "floor": "oak"
+    },
+    {
+      "id": "racing",
+      "name": "Sim racing nook",
+      "rect": [
+        2.7,
+        12.1,
+        2.71,
+        2.35
+      ],
+      "level": "ground",
+      "floor": "oak"
+    },
+    {
+      "id": "bedroom",
+      "name": "Bedroom",
+      "rect": [
+        1.05,
+        4.1,
+        4.36,
+        7.1
+      ],
+      "level": "loft",
+      "floor": "carpet"
+    },
+    {
+      "id": "reading",
+      "name": "Reading nook",
+      "rect": [
+        0,
+        4.1,
+        1.05,
+        2.9
+      ],
+      "level": "loft",
+      "floor": "carpet"
+    },
+    {
+      "id": "landing",
+      "name": "Stair landing",
+      "rect": [
+        0,
+        10,
+        1.05,
+        1.2
+      ],
+      "level": "loft",
+      "floor": "carpet"
+    },
+    {
+      "id": "dressing",
+      "name": "Dressing",
+      "rect": [
+        2.7,
+        11.2,
+        2.71,
+        0.9
+      ],
+      "level": "loft",
+      "floor": "carpet"
+    },
+    {
+      "id": "ensuite",
+      "name": "Primary bath",
+      "rect": [
+        2.7,
+        12.1,
+        2.71,
+        2.35
+      ],
+      "level": "loft",
+      "floor": "tile"
+    }
+  ],
+  "openings": [
+    {
+      "type": "open",
+      "to": [
+        5.41,
+        4.65
+      ],
+      "level": "ground",
+      "from": [
+        0,
+        4.65
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        5.41,
+        7
+      ],
+      "level": "ground",
+      "from": [
+        1.05,
+        7
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        1.05,
+        10
+      ],
+      "level": "ground",
+      "from": [
+        1.05,
+        7
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        2.7,
+        10
+      ],
+      "level": "ground",
+      "from": [
+        2.7,
+        7
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        2.7,
+        12.1
+      ],
+      "level": "ground",
+      "from": [
+        1.05,
+        12.1
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        2.7,
+        14.45
+      ],
+      "level": "ground",
+      "from": [
+        2.7,
+        12.1
+      ]
+    },
+    {
+      "type": "door",
+      "to": [
+        2.35,
+        14.45
+      ],
+      "level": "ground",
+      "from": [
+        1.4,
+        14.45
+      ]
+    },
+    {
+      "type": "door",
+      "to": [
+        1.05,
+        11.7
+      ],
+      "level": "ground",
+      "from": [
+        1.05,
+        10.25
+      ]
+    },
+    {
+      "type": "door",
+      "to": [
+        2.7,
+        11.15
+      ],
+      "level": "ground",
+      "from": [
+        2.7,
+        10.3
+      ]
+    },
+    {
+      "type": "window",
+      "to": [
+        1.5,
+        0
+      ],
+      "level": "ground",
+      "sill": 0.45,
+      "head": 2.6,
+      "from": [
+        0.35,
+        0
+      ]
+    },
+    {
+      "type": "door",
+      "to": [
+        3.95,
+        0
+      ],
+      "level": "ground",
+      "from": [
+        1.85,
+        0
+      ]
+    },
+    {
+      "type": "window",
+      "to": [
+        5.06,
+        0
+      ],
+      "level": "ground",
+      "sill": 0.45,
+      "head": 2.6,
+      "from": [
+        4.1,
+        0
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        1.05,
+        7
+      ],
+      "level": "loft",
+      "from": [
+        1.05,
+        4.1
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        1.05,
+        7
+      ],
+      "level": "loft",
+      "from": [
+        0,
+        7
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        1.05,
+        10
+      ],
+      "level": "loft",
+      "from": [
+        1.05,
+        7
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        1.05,
+        11.2
+      ],
+      "level": "loft",
+      "from": [
+        1.05,
+        10
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        1.05,
+        10
+      ],
+      "level": "loft",
+      "from": [
+        0,
+        10
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        5.41,
+        4.1
+      ],
+      "level": "loft",
+      "from": [
+        0,
+        4.1
+      ]
+    },
+    {
+      "type": "open",
+      "to": [
+        4.25,
+        11.2
+      ],
+      "level": "loft",
+      "from": [
+        3.35,
+        11.2
+      ]
+    },
+    {
+      "type": "door",
+      "to": [
+        4.35,
+        12.1
+      ],
+      "level": "loft",
+      "from": [
+        3.55,
+        12.1
+      ]
+    }
+  ],
+  "furniture": [
+    {
+      "type": "rug",
+      "pos": [
+        2.65,
+        2.85
+      ],
+      "level": "ground",
+      "size": [
+        3.25,
+        3.1
+      ],
+      "color": "#d4cbbb"
+    },
+    {
+      "type": "sectional",
+      "pos": [
+        2.86,
+        2.9
+      ],
+      "level": "ground",
+      "width": 3.0,
+      "depth": 3.2,
+      "rot": 180,
+      "color": "#dfd9c9"
+    },
+    {
+      "type": "coffeeTable",
+      "pos": [
+        2.45,
+        2.55
+      ],
+      "level": "ground",
+      "width": 1.05
+    },
+    {
+      "type": "tv",
+      "pos": [
+        0.3,
+        2.55
+      ],
+      "level": "ground",
+      "width": 2.5,
+      "rot": 90
+    },
+    {
+      "type": "fireplace",
+      "pos": [
+        5.08,
+        2.5
+      ],
+      "level": "ground",
+      "rot": -90,
+      "width": 1.25,
+      "height": 5.5
+    },
+    {
+      "type": "piano",
+      "pos": [
+        0.95,
+        0.4
+      ],
+      "level": "ground",
+      "rot": 0
+    },
+    {
+      "type": "desk",
+      "pos": [
+        4.7,
+        0.87
+      ],
+      "level": "ground",
+      "width": 1.35,
+      "rot": -90
+    },
+    {
+      "type": "sideboard",
+      "pos": [
+        0.27,
+        4.8
+      ],
+      "level": "ground",
+      "width": 1.35,
+      "rot": 90
+    },
+    {
+      "type": "diningSet",
+      "pos": [
+        3.45,
+        5.48
+      ],
+      "level": "ground",
+      "width": 1.65,
+      "chairs": 4,
+      "color": "#24292c"
+    },
+    {
+      "type": "counter",
+      "pos": [
+        4.05,
+        7.12
+      ],
+      "level": "ground",
+      "width": 2.65,
+      "depth": 0.72,
+      "height": 1.06
+    },
+    {
+      "type": "stool",
+      "pos": [
+        3.25,
+        6.6
+      ],
+      "level": "ground",
+      "rot": 180,
+      "color": "#b5996d"
+    },
+    {
+      "type": "stool",
+      "pos": [
+        4.1,
+        6.6
+      ],
+      "level": "ground",
+      "rot": 180,
+      "color": "#b5996d"
+    },
+    {
+      "type": "stool",
+      "pos": [
+        4.95,
+        6.6
+      ],
+      "level": "ground",
+      "rot": 180,
+      "color": "#b5996d"
+    },
+    {
+      "type": "kitchen",
+      "pos": [
+        5.07,
+        8.55
+      ],
+      "level": "ground",
+      "width": 2.4,
+      "rot": -90,
+      "upper": true
+    },
+    {
+      "type": "counter",
+      "pos": [
+        3.9,
+        9.68
+      ],
+      "level": "ground",
+      "width": 1.65
+    },
+    {
+      "type": "fridge",
+      "pos": [
+        3.1,
+        9.6
+      ],
+      "level": "ground"
+    },
+    {
+      "type": "stairs",
+      "pos": [
+        0.525,
+        8.5
+      ],
+      "level": "ground",
+      "width": 0.94,
+      "depth": 3,
+      "height": 2.75,
+      "rot": 180
+    },
+    {
+      "type": "wardrobe",
+      "pos": [
+        0.35,
+        13.25
+      ],
+      "level": "ground",
+      "width": 1.9,
+      "rot": 90,
+      "height": 2.3
+    },
+    {
+      "type": "laundry",
+      "pos": [
+        0.5,
+        11.12
+      ],
+      "level": "ground",
+      "rot": 90,
+      "stacked": false
+    },
+    {
+      "type": "bathtub",
+      "pos": [
+        4.92,
+        11.05
+      ],
+      "level": "ground",
+      "rot": 90
+    },
+    {
+      "type": "vanity",
+      "pos": [
+        3.36,
+        11.82
+      ],
+      "level": "ground",
+      "width": 1.05,
+      "rot": 180
+    },
+    {
+      "type": "toilet",
+      "pos": [
+        4.25,
+        11.69
+      ],
+      "level": "ground",
+      "rot": 180
+    },
+    {
+      "type": "simRig",
+      "pos": [
+        3.565,
+        12.96
+      ],
+      "level": "ground",
+      "width": 1.65,
+      "rot": 0
+    },
+    {
+      "type": "sofa",
+      "pos": [
+        4.91,
+        13.4
+      ],
+      "level": "ground",
+      "width": 1.8,
+      "rot": 270,
+      "color": "#777d7c"
+    },
+    {
+      "type": "rug",
+      "pos": [
+        4.0,
+        13.25
+      ],
+      "level": "ground",
+      "size": [
+        2.2,
+        1.75
+      ],
+      "color": "#3d4048"
+    },
+    {
+      "type": "plant",
+      "pos": [
+        0.48,
+        1.2
+      ],
+      "level": "ground",
+      "height": 1.6
+    },
+    {
+      "type": "plant",
+      "pos": [
+        0.56,
+        3.9
+      ],
+      "level": "ground",
+      "height": 1.05
+    },
+    {
+      "type": "plant",
+      "pos": [
+        4.96,
+        4.25
+      ],
+      "level": "ground",
+      "height": 1.9
+    },
+    {
+      "type": "plant",
+      "pos": [
+        4.95,
+        5.95
+      ],
+      "level": "ground",
+      "height": 1.65
+    },
+    {
+      "type": "plant",
+      "pos": [
+        0.4,
+        5.6
+      ],
+      "level": "ground",
+      "height": 1.1
+    },
+    {
+      "type": "plant",
+      "pos": [
+        1.55,
+        0.6
+      ],
+      "level": "ground",
+      "height": 0.8
+    },
+    {
+      "type": "art",
+      "pos": [
+        0.13,
+        4.1
+      ],
+      "level": "ground",
+      "rot": 90,
+      "y": 1.4,
+      "color": "#438a91",
+      "width": 0.68
+    },
+    {
+      "type": "art",
+      "pos": [
+        0.13,
+        5.75
+      ],
+      "level": "ground",
+      "rot": 90,
+      "y": 1.4,
+      "color": "#a39c7a",
+      "width": 0.68
+    },
+    {
+      "type": "art",
+      "pos": [
+        5.26,
+        5.1
+      ],
+      "level": "ground",
+      "rot": -90,
+      "y": 1.4,
+      "color": "#789b76",
+      "width": 0.68
+    },
+    {
+      "type": "rug",
+      "pos": [
+        1.6,
+        -2.25
+      ],
+      "level": "ground",
+      "size": [
+        2.9,
+        4.0
+      ],
+      "color": "#52613e"
+    },
+    {
+      "type": "sofa",
+      "pos": [
+        0.63,
+        -2.8
+      ],
+      "level": "ground",
+      "rot": 90,
+      "width": 2.45,
+      "color": "#e2ded2"
+    },
+    {
+      "type": "armchair",
+      "pos": [
+        0.65,
+        -0.85
+      ],
+      "level": "ground",
+      "rot": 130,
+      "color": "#e2ded2"
+    },
+    {
+      "type": "armchair",
+      "pos": [
+        2.2,
+        -3.87
+      ],
+      "level": "ground",
+      "rot": 0,
+      "color": "#e2ded2"
+    },
+    {
+      "type": "firepit",
+      "pos": [
+        1.8,
+        -2.4
+      ],
+      "level": "ground",
+      "width": 1.0
+    },
+    {
+      "type": "diningSet",
+      "pos": [
+        4.38,
+        -2.15
+      ],
+      "level": "ground",
+      "width": 2.35,
+      "rot": 90,
+      "chairs": 4,
+      "color": "#353d39"
+    },
+    {
+      "type": "bamboo",
+      "pos": [
+        0.75,
+        -4.35
+      ],
+      "level": "ground",
+      "width": 1.12,
+      "height": 2.05
+    },
+    {
+      "type": "bamboo",
+      "pos": [
+        1.95,
+        -4.35
+      ],
+      "level": "ground",
+      "width": 1.12,
+      "height": 2.05
+    },
+    {
+      "type": "bamboo",
+      "pos": [
+        3.15,
+        -4.35
+      ],
+      "level": "ground",
+      "width": 1.12,
+      "height": 2.05
+    },
+    {
+      "type": "bamboo",
+      "pos": [
+        4.35,
+        -4.35
+      ],
+      "level": "ground",
+      "width": 1.12,
+      "height": 2.05
+    },
+    {
+      "type": "plant",
+      "pos": [
+        5.0,
+        -0.65
+      ],
+      "level": "ground",
+      "height": 1.35
+    },
+    {
+      "type": "plant",
+      "pos": [
+        4.9,
+        -3.7
+      ],
+      "level": "ground",
+      "height": 1.7
+    },
+    {
+      "type": "plant",
+      "pos": [
+        0.4,
+        -4.12
+      ],
+      "level": "ground",
+      "height": 1.7
+    },
+    {
+      "type": "bed",
+      "pos": [
+        4.17,
+        7.63
+      ],
+      "level": "loft",
+      "width": 1.93,
+      "rot": -90,
+      "color": "#515863"
+    },
+    {
+      "type": "nightstand",
+      "pos": [
+        4.73,
+        6.22
+      ],
+      "level": "loft"
+    },
+    {
+      "type": "nightstand",
+      "pos": [
+        4.73,
+        9.0
+      ],
+      "level": "loft"
+    },
+    {
+      "type": "dresser",
+      "pos": [
+        1.45,
+        8.5
+      ],
+      "level": "loft",
+      "width": 2.65,
+      "rot": 90,
+      "color": "#a78961"
+    },
+    {
+      "type": "sofa",
+      "pos": [
+        0.6,
+        5.5
+      ],
+      "level": "loft",
+      "rot": 90,
+      "color": "#e7e0d3",
+      "width": 1.35
+    },
+    {
+      "type": "rug",
+      "pos": [
+        1.28,
+        5.4
+      ],
+      "level": "loft",
+      "size": [
+        1.35,
+        1.4
+      ],
+      "color": "#746956"
+    },
+    {
+      "type": "mirror",
+      "pos": [
+        5.03,
+        5.57
+      ],
+      "level": "loft",
+      "rot": -90,
+      "height": 1.8
+    },
+    {
+      "type": "railing",
+      "pos": [
+        2.7,
+        4.1
+      ],
+      "level": "loft",
+      "width": 5.41,
+      "height": 1.02,
+      "solid": true
+    },
+    {
+      "type": "railing",
+      "pos": [
+        1.05,
+        8.5
+      ],
+      "level": "loft",
+      "width": 3,
+      "rot": 90,
+      "height": 0.95
+    },
+    {
+      "type": "wardrobe",
+      "pos": [
+        2.96,
+        11.6
+      ],
+      "level": "loft",
+      "width": 0.8,
+      "rot": 90,
+      "height": 2.3
+    },
+    {
+      "type": "wardrobe",
+      "pos": [
+        5.15,
+        11.6
+      ],
+      "level": "loft",
+      "width": 0.8,
+      "rot": -90,
+      "height": 2.3
+    },
+    {
+      "type": "shower",
+      "pos": [
+        4.84,
+        12.86
+      ],
+      "level": "loft",
+      "width": 1.4,
+      "depth": 1.0,
+      "rot": -90,
+      "height": 2.05
+    },
+    {
+      "type": "vanity",
+      "pos": [
+        3.015,
+        13.42
+      ],
+      "level": "loft",
+      "rot": 90,
+      "width": 1.65,
+      "basins": 2
+    },
+    {
+      "type": "toilet",
+      "pos": [
+        4.74,
+        14.05
+      ],
+      "level": "loft",
+      "rot": 270
+    },
+    {
+      "type": "plant",
+      "pos": [
+        4.91,
+        9.7
+      ],
+      "level": "loft",
+      "height": 1.9
+    },
+    {
+      "type": "plant",
+      "pos": [
+        0.35,
+        6.4
+      ],
+      "level": "loft",
+      "height": 1.65
+    },
+    {
+      "type": "plant",
+      "pos": [
+        4.91,
+        5.0
+      ],
+      "level": "loft",
+      "height": 1.55
+    },
+    {
+      "type": "speaker",
+      "pos": [
+        0.36,
+        1.25
+      ],
+      "level": "ground",
+      "rot": 90,
+      "width": 0.25,
+      "height": 0.9
+    },
+    {
+      "type": "speaker",
+      "pos": [
+        0.36,
+        3.83
+      ],
+      "level": "ground",
+      "rot": 90,
+      "width": 0.25,
+      "height": 0.9
+    },
+    {
+      "type": "glazing",
+      "pos": [
+        2.705,
+        0
+      ],
+      "level": "ground",
+      "width": 5.25,
+      "height": 5.35
+    },
+    {
+      "type": "dresser",
+      "pos": [
+        5.13,
+        5.04
+      ],
+      "level": "ground",
+      "width": 1.12,
+      "rot": -90,
+      "color": "#ece8e0"
+    }
+  ],
+  "lights": [
+    {
+      "id": "racing.govee",
+      "name": "Govee racing lights",
+      "room": "racing",
+      "type": "strip",
+      "pos": [
+        3.565,
+        12.31
+      ],
+      "brand": "Govee",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner markup round 2; moved with racing rig toward the bathroom partition.",
+      "length": 1.7,
+      "rot": 0,
+      "y": 1.12,
+      "color": "#57e1bc"
+    },
+    {
+      "id": "racing.hue",
+      "name": "Hue nook light",
+      "room": "racing",
+      "type": "table",
+      "pos": [
+        4.98,
+        14.28
+      ],
+      "brand": "Philips Hue",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner annotations, revision 1 packet pages 5-6, received October 14, 2026; coordinates remain approximate",
+      "color": "#9079ff"
+    },
+    {
+      "id": "bath.lutron",
+      "name": "Guest bath · Lutron",
+      "room": "bath",
+      "type": "ceiling",
+      "pos": [
+        3.8,
+        11.05
+      ],
+      "brand": "Lutron",
+      "capabilities": [
+        "brightness"
+      ],
+      "evidence": "Owner description; placement estimated from photos"
+    },
+    {
+      "id": "kitchen.lutron",
+      "name": "Kitchen · Lutron",
+      "room": "kitchen",
+      "type": "spots",
+      "pos": [
+        4.2,
+        8.5
+      ],
+      "brand": "Lutron",
+      "capabilities": [
+        "brightness"
+      ],
+      "evidence": "Owner description; placement estimated from photos"
+    },
+    {
+      "id": "bar.hue",
+      "name": "Under-bar Hue strip",
+      "room": "kitchen",
+      "type": "strip",
+      "pos": [
+        4.05,
+        7.07
+      ],
+      "brand": "Philips Hue",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "length": 2.55,
+      "y": 0.93,
+      "color": "#e5b377"
+    },
+    {
+      "id": "dining.lutron",
+      "name": "Dining · Lutron",
+      "room": "dining",
+      "type": "spots",
+      "pos": [
+        2.85,
+        5.78
+      ],
+      "brand": "Lutron",
+      "capabilities": [
+        "brightness"
+      ],
+      "evidence": "Owner description; placement estimated from photos"
+    },
+    {
+      "id": "living.lutron",
+      "name": "Living · Lutron",
+      "room": "living",
+      "type": "spots",
+      "pos": [
+        2.9,
+        2.8
+      ],
+      "brand": "Lutron",
+      "capabilities": [
+        "brightness"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "y": 5.25
+    },
+    {
+      "id": "living.hue-media",
+      "name": "Media Hue accent",
+      "room": "living",
+      "type": "strip",
+      "pos": [
+        0.21,
+        2.55
+      ],
+      "brand": "Philips Hue",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "length": 2.1,
+      "rot": 90,
+      "y": 0.68,
+      "color": "#99b2e1"
+    },
+    {
+      "id": "living.hue-lamp",
+      "name": "Living Hue lamp",
+      "room": "living",
+      "type": "table",
+      "pos": [
+        0.38,
+        4.27
+      ],
+      "brand": "Philips Hue",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "y": 0.8
+    },
+    {
+      "id": "living.hue-desk",
+      "name": "Desk Hue accent",
+      "room": "living",
+      "type": "strip",
+      "pos": [
+        5.14,
+        0.86
+      ],
+      "brand": "Philips Hue",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "length": 1.25,
+      "rot": 90,
+      "y": 0.78,
+      "color": "#88bad4"
+    },
+    {
+      "id": "stairs.lutron",
+      "name": "Stair lights · Lutron",
+      "room": "stairs",
+      "type": "strip",
+      "pos": [
+        0.97,
+        8.5
+      ],
+      "brand": "Lutron",
+      "capabilities": [
+        "brightness"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "length": 2.75,
+      "rot": 90,
+      "y": 1.65
+    },
+    {
+      "id": "bedroom.lutron",
+      "name": "Bedroom track · Lutron",
+      "room": "bedroom",
+      "type": "spots",
+      "pos": [
+        3.15,
+        7.65
+      ],
+      "brand": "Lutron",
+      "capabilities": [
+        "brightness"
+      ],
+      "evidence": "Owner description; placement estimated from photos"
+    },
+    {
+      "id": "bedroom.rope",
+      "name": "Govee bed rope",
+      "room": "bedroom",
+      "type": "rope",
+      "pos": [
+        4.17,
+        7.63
+      ],
+      "brand": "Govee",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "size": [
+        2.07,
+        2.24
+      ],
+      "rot": -90,
+      "y": 0.13,
+      "color": "#bda6ea"
+    },
+    {
+      "id": "bedroom.hue-left",
+      "name": "Hue bedside · left",
+      "room": "bedroom",
+      "type": "table",
+      "pos": [
+        4.77,
+        6.22
+      ],
+      "brand": "Philips Hue",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "y": 0.52
+    },
+    {
+      "id": "bedroom.hue-right",
+      "name": "Hue bedside · right",
+      "room": "bedroom",
+      "type": "table",
+      "pos": [
+        4.77,
+        9.0
+      ],
+      "brand": "Philips Hue",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "y": 0.52
+    },
+    {
+      "id": "bedroom.govee-floor",
+      "name": "Govee corner lamp",
+      "room": "bedroom",
+      "type": "floor",
+      "pos": [
+        4.58,
+        4.68
+      ],
+      "brand": "Govee",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner annotations, revision 1 packet pages 5-6, received October 14, 2026; coordinates remain approximate",
+      "color": "#90a5dc"
+    },
+    {
+      "id": "reading.govee-tree",
+      "name": "Govee tree lamp",
+      "room": "reading",
+      "type": "tree",
+      "pos": [
+        0.42,
+        4.67
+      ],
+      "brand": "Govee",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner annotations, revision 1 packet pages 5-6, received October 14, 2026; coordinates remain approximate",
+      "color": "#d3a573"
+    },
+    {
+      "id": "bedroom.hue-dresser",
+      "name": "Hue dresser lamp",
+      "room": "bedroom",
+      "type": "table",
+      "pos": [
+        1.44,
+        7.48
+      ],
+      "brand": "Philips Hue",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner annotations, revision 1 packet pages 5-6, received October 14, 2026; coordinates remain approximate",
+      "y": 0.86
+    },
+    {
+      "id": "ensuite.mirror",
+      "name": "Mirror · Lutron",
+      "room": "ensuite",
+      "type": "strip",
+      "pos": [
+        2.84,
+        13.42
+      ],
+      "brand": "Lutron",
+      "capabilities": [
+        "brightness"
+      ],
+      "evidence": "Owner annotations, revision 1 packet pages 5-6, received October 14, 2026; coordinates remain approximate",
+      "length": 1.6,
+      "rot": 90,
+      "y": 1.82
+    },
+    {
+      "id": "patio.lifx-1",
+      "name": "LIFX string · 1",
+      "room": "patio",
+      "type": "string",
+      "pos": [
+        2.7,
+        -4.15
+      ],
+      "brand": "LIFX",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "length": 4.7,
+      "y": 2.12,
+      "color": "#f5c076"
+    },
+    {
+      "id": "patio.lifx-2",
+      "name": "LIFX string · 2",
+      "room": "patio",
+      "type": "string",
+      "pos": [
+        0.25,
+        -2.15
+      ],
+      "brand": "LIFX",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "length": 3.8,
+      "rot": 90,
+      "y": 2.12,
+      "color": "#d6a5dc"
+    },
+    {
+      "id": "patio.hue",
+      "name": "Patio Hue strip",
+      "room": "patio",
+      "type": "strip",
+      "pos": [
+        5.2,
+        -2.3
+      ],
+      "brand": "Philips Hue",
+      "capabilities": [
+        "brightness",
+        "color",
+        "temp"
+      ],
+      "evidence": "Owner description; placement estimated from photos",
+      "length": 4.25,
+      "rot": 90,
+      "y": 0.17,
+      "color": "#dd9869"
+    }
+  ],
+  "devices": [
+    {
+      "id": "entry.ring",
+      "name": "Entrance camera",
+      "room": "entry",
+      "pos": [
+        1.86,
+        14.28
+      ],
+      "brand": "Ring",
+      "kind": "camera",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "y": 2.35,
+      "rot": 180,
+      "notes": "Above the entrance door; view into the entry.",
+      "model": "camera"
+    },
+    {
+      "id": "stairs.ring",
+      "name": "Stair camera",
+      "room": "stairs",
+      "pos": [
+        0.5,
+        7.14
+      ],
+      "brand": "Ring",
+      "kind": "camera",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "y": 2.8,
+      "notes": "Over the stairs, pointing down. Exact angle unverified.",
+      "model": "camera"
+    },
+    {
+      "id": "patio.ring",
+      "name": "Patio floodlight camera",
+      "room": "patio",
+      "pos": [
+        4.94,
+        -0.12
+      ],
+      "brand": "Ring",
+      "kind": "camera",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "flood": true,
+      "y": 2.55,
+      "rot": 180,
+      "model": "camera"
+    },
+    {
+      "id": "laundry.washer",
+      "name": "GE Wi-Fi washer",
+      "room": "laundry",
+      "pos": [
+        0.5,
+        11.455
+      ],
+      "brand": "GE",
+      "kind": "appliance",
+      "status": "unlinked",
+      "evidence": "Owner annotations, revision 1 packet pages 5-6, received October 14, 2026; coordinates remain approximate",
+      "notes": "Side by side in the left hallway closet, confirmed by owner markup. Washer/dryer order is provisional."
+    },
+    {
+      "id": "laundry.dryer",
+      "name": "GE Wi-Fi dryer",
+      "room": "laundry",
+      "pos": [
+        0.5,
+        10.785
+      ],
+      "brand": "GE",
+      "kind": "appliance",
+      "status": "unlinked",
+      "evidence": "Owner annotations, revision 1 packet pages 5-6, received October 14, 2026; coordinates remain approximate",
+      "notes": "Side by side in the left hallway closet, confirmed by owner markup. Washer/dryer order is provisional."
+    },
+    {
+      "id": "living.appletv",
+      "name": "Apple TV",
+      "room": "living",
+      "pos": [
+        0.38,
+        2.25
+      ],
+      "brand": "Apple",
+      "kind": "media",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "y": 0.48,
+      "model": "mediaBox"
+    },
+    {
+      "id": "living.marantz",
+      "name": "Marantz sound system",
+      "room": "living",
+      "pos": [
+        0.4,
+        2.62
+      ],
+      "brand": "Marantz",
+      "kind": "media",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "rot": 90,
+      "y": 0.48,
+      "model": "receiver"
+    },
+    {
+      "id": "living.projector",
+      "name": "Samsung projector",
+      "room": "living",
+      "pos": [
+        0.38,
+        2.95
+      ],
+      "brand": "Samsung",
+      "kind": "media",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "rot": 90,
+      "y": 0.5,
+      "model": "projector"
+    },
+    {
+      "id": "living.computer",
+      "name": "Living-room computer",
+      "room": "living",
+      "pos": [
+        4.75,
+        0.9
+      ],
+      "brand": "Owner supplied",
+      "kind": "computer",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "notes": "Desk at the rear right, beside the patio doors."
+    },
+    {
+      "id": "living.router",
+      "name": "Apple Wi-Fi router",
+      "room": "living",
+      "pos": [
+        0.34,
+        3.35
+      ],
+      "brand": "Apple",
+      "kind": "network",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "y": 0.46,
+      "notes": "Device present per owner; location on media console is provisional.",
+      "model": "router"
+    },
+    {
+      "id": "living.homebridge",
+      "name": "Homebridge",
+      "room": "living",
+      "pos": [
+        0.33,
+        3.63
+      ],
+      "brand": "Homebridge",
+      "kind": "bridge",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "y": 0.46,
+      "notes": "Software bridge; host and physical placement unverified.",
+      "model": "mediaBox"
+    },
+    {
+      "id": "living.fan",
+      "name": "Lutron ceiling fan",
+      "room": "living",
+      "pos": [
+        2.65,
+        1.98
+      ],
+      "brand": "Lutron",
+      "kind": "fan",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "y": 5.08,
+      "width": 1.65,
+      "model": "ceilingFan"
+    },
+    {
+      "id": "living.blind-1",
+      "name": "Lutron blind · 1",
+      "room": "living",
+      "pos": [
+        0.91,
+        0.03
+      ],
+      "brand": "Lutron",
+      "kind": "blind",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "width": 1.15,
+      "height": 2.64,
+      "y": 0,
+      "notes": "Three motorized blinds per owner; glazing grouping inferred from photos.",
+      "model": "blinds"
+    },
+    {
+      "id": "living.blind-2",
+      "name": "Lutron blind · 2",
+      "room": "living",
+      "pos": [
+        2.97,
+        0.03
+      ],
+      "brand": "Lutron",
+      "kind": "blind",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "width": 2.12,
+      "height": 2.64,
+      "y": 0,
+      "notes": "Three motorized blinds per owner; glazing grouping inferred from photos.",
+      "model": "blinds"
+    },
+    {
+      "id": "living.blind-3",
+      "name": "Lutron blind · 3",
+      "room": "living",
+      "pos": [
+        2.97,
+        0.03
+      ],
+      "brand": "Lutron",
+      "kind": "blind",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "width": 2.5,
+      "height": 2.3,
+      "y": 2.9,
+      "notes": "Three motorized blinds per owner; glazing grouping inferred from photos.",
+      "model": "blinds"
+    },
+    {
+      "id": "bedroom.eightsleep",
+      "name": "Eight Sleep Pod 4 Ultra",
+      "room": "bedroom",
+      "pos": [
+        4.17,
+        7.63
+      ],
+      "brand": "Eight Sleep",
+      "kind": "bed",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "notes": "Smart bed shown in place; cooling, base and sleep data are not connected."
+    },
+    {
+      "id": "bedroom.eightsleep-hub",
+      "name": "Eight Sleep hub",
+      "room": "bedroom",
+      "pos": [
+        4.63,
+        9.49
+      ],
+      "brand": "Eight Sleep",
+      "kind": "bed",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "model": "bedHub"
+    },
+    {
+      "id": "bedroom.homepod-left",
+      "name": "HomePod mini · left",
+      "room": "bedroom",
+      "pos": [
+        4.55,
+        6.22
+      ],
+      "brand": "Apple",
+      "kind": "speaker",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "y": 0.52,
+      "model": "homepod"
+    },
+    {
+      "id": "bedroom.homepod-right",
+      "name": "HomePod mini · right",
+      "room": "bedroom",
+      "pos": [
+        4.55,
+        9.0
+      ],
+      "brand": "Apple",
+      "kind": "speaker",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "y": 0.52,
+      "model": "homepod"
+    },
+    {
+      "id": "bedroom.purifier",
+      "name": "Govee air purifier",
+      "room": "bedroom",
+      "pos": [
+        4.98,
+        10.05
+      ],
+      "brand": "Govee",
+      "kind": "air",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "model": "purifier"
+    },
+    {
+      "id": "bedroom.humidity",
+      "name": "Scent / humidity device",
+      "room": "bedroom",
+      "pos": [
+        1.44,
+        9.45
+      ],
+      "brand": "Govee",
+      "kind": "air",
+      "status": "unlinked",
+      "evidence": "Owner annotations, revision 1 packet pages 5-6, received October 14, 2026; coordinates remain approximate",
+      "y": 0.86,
+      "model": "humidifier"
+    },
+    {
+      "id": "bedroom.sensor",
+      "name": "Air / temperature sensor",
+      "room": "bedroom",
+      "pos": [
+        1.43,
+        7.74
+      ],
+      "brand": "Govee",
+      "kind": "sensor",
+      "status": "unlinked",
+      "evidence": "Owner description; position estimated",
+      "y": 0.86,
+      "model": "sensor"
+    },
+    {
+      "id": "ensuite.homepod",
+      "name": "Bathroom HomePod mini",
+      "room": "ensuite",
+      "pos": [
+        2.84,
+        12.8
+      ],
+      "brand": "Apple",
+      "kind": "speaker",
+      "status": "unlinked",
+      "evidence": "Owner annotations, revision 1 packet pages 5-6, received October 14, 2026; coordinates remain approximate",
+      "y": 1.53,
+      "notes": "Moved with the double vanity to the opposite wall per owner markup; wall shelf height from IMG_8416.",
+      "model": "homepod",
+      "rot": 90
+    }
+  ],
+  "acs": [],
+  "scenes": [
+    {
+      "id": "cozy",
+      "name": "At home",
+      "icon": "sofa",
+      "lights": {
+        "*": {
+          "on": false
+        },
+        "bar.hue": {
+          "on": true,
+          "brightness": 0.65
+        },
+        "dining.lutron": {
+          "on": true,
+          "brightness": 0.65
+        },
+        "living.hue-media": {
+          "on": true,
+          "brightness": 0.65
+        },
+        "living.hue-lamp": {
+          "on": true,
+          "brightness": 0.65
+        },
+        "living.hue-desk": {
+          "on": true,
+          "brightness": 0.65
+        },
+        "stairs.lutron": {
+          "on": true,
+          "brightness": 0.65
+        },
+        "patio.lifx-1": {
+          "on": true,
+          "brightness": 0.65
+        },
+        "patio.lifx-2": {
+          "on": true,
+          "brightness": 0.65
+        },
+        "patio.hue": {
+          "on": true,
+          "brightness": 0.65
+        }
+      },
+      "acs": {}
+    },
+    {
+      "id": "racing",
+      "name": "Race",
+      "icon": "tv",
+      "lights": {
+        "*": {
+          "on": false
+        },
+        "racing.govee": {
+          "on": true,
+          "brightness": 0.8
+        },
+        "racing.hue": {
+          "on": true,
+          "brightness": 0.8
+        },
+        "stairs.lutron": {
+          "on": true,
+          "brightness": 0.8
+        }
+      },
+      "acs": {}
+    },
+    {
+      "id": "movie",
+      "name": "Cinema",
+      "icon": "film",
+      "lights": {
+        "*": {
+          "on": false
+        },
+        "living.hue-media": {
+          "on": true,
+          "brightness": 0.24
+        },
+        "bar.hue": {
+          "on": true,
+          "brightness": 0.24
+        }
+      },
+      "acs": {}
+    },
+    {
+      "id": "night",
+      "name": "Wind down",
+      "icon": "moon",
+      "lights": {
+        "*": {
+          "on": false
+        },
+        "bedroom.rope": {
+          "on": true,
+          "brightness": 0.3
+        },
+        "bedroom.hue-left": {
+          "on": true,
+          "brightness": 0.3
+        },
+        "bedroom.hue-right": {
+          "on": true,
+          "brightness": 0.3
+        },
+        "reading.govee-tree": {
+          "on": true,
+          "brightness": 0.3
+        },
+        "stairs.lutron": {
+          "on": true,
+          "brightness": 0.3
+        }
+      },
+      "acs": {}
+    },
+    {
+      "id": "patio",
+      "name": "Patio",
+      "icon": "leaf",
+      "lights": {
+        "*": {
+          "on": false
+        },
+        "patio.lifx-1": {
+          "on": true,
+          "brightness": 0.8
+        },
+        "patio.lifx-2": {
+          "on": true,
+          "brightness": 0.8
+        },
+        "patio.hue": {
+          "on": true,
+          "brightness": 0.8
+        },
+        "bar.hue": {
+          "on": true,
+          "brightness": 0.8
+        }
+      },
+      "acs": {}
+    }
+  ]
+}

@@ -64,8 +64,15 @@ async function boot() {
   const panel = createPanel(app, config, store, {
     onFocus: (target) => world?.focus(target),
     onMenu: (anchor, reason) => {
-      if (reason === 'escape') post('close');
+      if (reason === 'escape') {
+        if (isNative && !isPhone) post('close');
+        else setMapExpanded(false);
+      }
       else if (reason === 'agent') post('openAgent');
+      else if (reason === 'map') {
+        if (isNative && !isPhone) post('openMap');
+        else setMapExpanded(!document.documentElement.classList.contains('mode-map'));
+      }
       else if (isPhone) post('openSettings'); // plans, sync and sign-in are native screens there
       else planMenu(anchor);
     },
@@ -77,7 +84,7 @@ async function boot() {
       onPick(target) {
         if (!target) return;
         if (target.kind === 'light') { haptic('light'); store.toggleLight(target.id); }
-        else if (target.kind === 'ac') panel.openSheet(target);
+        else if (target.kind === 'ac' || target.kind === 'device') panel.openSheet(target);
         else if (target.kind === 'room') panel.selectRoom(target.id);
       },
     });
@@ -88,7 +95,15 @@ async function boot() {
 
   panel.attach(world);
   // On a phone the header sits lower (status bar) but is closer to the model.
-  const applyInsets = () => (isPhone ? world.setInsets(50 + safeAreaTop(), 36) : world.setInsets(...STAGE_INSETS));
+  const applyInsets = () => (document.documentElement.classList.contains('mode-map')
+    ? world.setInsets(78 + (isPhone ? safeAreaTop() : 0), 24)
+    : isPhone ? world.setInsets(50 + safeAreaTop(), 36) : world.setInsets(...STAGE_INSETS));
+  function setMapExpanded(expanded) {
+    document.documentElement.classList.toggle('mode-map', expanded);
+    panel.setMapExpanded(expanded);
+    applyInsets(); world.resize();
+  }
+  panel.setMapExpanded(document.documentElement.classList.contains('mode-map'));
   applyInsets();
   new ResizeObserver(() => (isPhone ? applyInsets() : world.resize())).observe(panel.canvas);
 
@@ -173,7 +188,7 @@ async function boot() {
   if (store.acCfg.has(opened)) panel.openSheet({ kind: 'ac', id: opened });
   else if (store.lightCfg.has(opened)) panel.openSheet({ kind: 'light', id: opened });
 
-  if (!isNative) show();
+  if (!isNative || mode === 'map') show();
   post('ready', { summary: store.summary() });
   window.__house = { store, world, panel, config }; // handy in the dev console
 }
@@ -198,6 +213,7 @@ async function renderShot(config, store, room) {
 }
 
 const mode = window.__HOUSE_BOOT__?.mode || new URLSearchParams(location.search).get('mode') || 'panel';
+if (mode === 'map') document.documentElement.classList.add('mode-map');
 if (mode === 'editor') {
   document.documentElement.classList.add('mode-editor');
   import('./editor/editor.js').then((m) => m.bootEditor(app)).catch((e) => fatal('Editor failed to start', e));

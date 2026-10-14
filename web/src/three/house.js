@@ -20,10 +20,11 @@ function wallSegments(config) {
   };
 
   for (const r of config.rooms) {
-    line('x', r.z).edges.push({ a: r.x, b: r.x + r.w, inside: 1 });
-    line('x', r.z + r.d).edges.push({ a: r.x, b: r.x + r.w, inside: -1 });
-    line('z', r.x).edges.push({ a: r.z, b: r.z + r.d, inside: 1 });
-    line('z', r.x + r.w).edges.push({ a: r.z, b: r.z + r.d, inside: -1 });
+    const height = r.wallHeight ?? config.wallHeight;
+    line('x', r.z).edges.push({ a: r.x, b: r.x + r.w, inside: 1, height });
+    line('x', r.z + r.d).edges.push({ a: r.x, b: r.x + r.w, inside: -1, height });
+    line('z', r.x).edges.push({ a: r.z, b: r.z + r.d, inside: 1, height });
+    line('z', r.x + r.w).edges.push({ a: r.z, b: r.z + r.d, inside: -1, height });
   }
   for (const o of config.openings) {
     const alongX = o.from[1] === o.to[1];
@@ -47,11 +48,12 @@ function wallSegments(config) {
         axis: l.axis, c: l.c, a: pts[i], b: pts[i + 1],
         kind: covering.length > 1 ? 'interior' : 'exterior',
         inside: covering[0].inside,
+        height: Math.max(...covering.map((e) => e.height)),
         opening: l.openings.find((o) => o.a < mid && mid < o.b) || null,
       };
       const prev = run[run.length - 1];
       if (prev && Math.abs(prev.b - seg.a) < EPS && prev.kind === seg.kind
-        && prev.inside === seg.inside && prev.opening === seg.opening) prev.b = seg.b;
+        && prev.inside === seg.inside && prev.height === seg.height && prev.opening === seg.opening) prev.b = seg.b;
       else run.push(seg);
     }
     // Free ends get a small extension so corners close up.
@@ -72,10 +74,13 @@ export function buildHouse(config, camDir) {
   const { minX, minZ, maxX, maxZ } = config.bounds;
 
   // Plinth the model stands on.
-  const plinth = box(maxX - minX + 0.7, 0.3, maxZ - minZ + 0.7, mat('#141927', { rough: 0.9 }), { r: 0.12 });
-  at(plinth, (minX + maxX) / 2, -0.305, (minZ + maxZ) / 2);
-  plinth.receiveShadow = true;
-  group.add(plinth);
+  // Separate slabs preserve the loft's open void and L-shaped footprint.
+  for (const r of config.rooms) {
+    const plinth = box(r.w + 0.12, 0.22, r.d + 0.12, mat('#202534', { rough: 0.9 }), { r: 0.02 });
+    at(plinth, r.x + r.w / 2, -0.225, r.z + r.d / 2);
+    plinth.receiveShadow = true;
+    group.add(plinth);
+  }
 
   for (const room of config.rooms) {
     const floor = floorMesh(room, room.floor);
@@ -118,16 +123,16 @@ export function buildHouse(config, camDir) {
     const type = s.opening?.type;
 
     if (near) {
-      if (type !== 'door') piece(s, a, b, 0, CURB, t);
+      if (type !== 'door' && type !== 'open') piece(s, a, b, 0, CURB, t);
       continue;
     }
     if (type === 'door' || type === 'open') continue;
 
-    const height = exterior ? H : Hi;
+    const height = exterior ? s.height : Hi;
     if (type === 'window' && exterior) {
       const { sill, head } = s.opening;
       piece(s, a, b, 0, sill, t);
-      piece(s, a, b, Math.min(head, H), H, t);
+      if (height > head) piece(s, a, b, head, height, t);
       const pane = piece(s, a, b, sill, head, 0.03, glass);
       pane.castShadow = false;
       const fw = 0.05;

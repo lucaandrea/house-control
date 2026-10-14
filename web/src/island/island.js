@@ -49,10 +49,17 @@ export async function bootIsland(root) {
   const status = h('div.isle-status');
   const power = h('button.isle-power', { 'aria-label': 'Everything on / off', onclick: toggleEverything }, icon('power', 15, 2.4));
   const scenes = h('div.isle-scenes');
+  let currentLevel = config.defaultLevel;
+  const floors = h('div.isle-floors', { hidden: config.levels.length < 2 });
+  for (const level of config.levels) floors.append(h('button', { 'aria-pressed': String(level.id === currentLevel), onclick: () => {
+    currentLevel = level.id; world?.setLevel(level.id);
+    for (const b of floors.children) b.setAttribute('aria-pressed', String(b.textContent === level.name));
+    for (const row of list.children) row.hidden = row.dataset.level !== level.id;
+  } }, level.name));
   const list = h('div.isle-list');
   const body = h('div.isle-body',
     h('div.isle-head', title, h('i.isle-gap'), h('div.isle-right', status, power)),
-    h('div.isle-main', h('div.isle-stage', canvas), h('div.isle-side', scenes, list)));
+    h('div.isle-main', h('div.isle-stage', canvas), h('div.isle-side', floors, scenes, list)));
   const shape = h('div.isle-shape', earLeft, earRight, body);
   const isle = h('div.isle', h('div.isle-glow'), shape);
   isle.dataset.state = 'collapsed';
@@ -88,6 +95,8 @@ export async function bootIsland(root) {
       h('button.chip-step', { 'aria-label': 'Warmer', onclick: step(1) }, icon('plus', 13, 2.4)),
       h('button.chip-power', { 'aria-label': `${cfg.name} power`, onclick: () => store.setAC(cfg.id, { on: !state.acs[cfg.id].on }) }, icon('power', 13, 2.4)));
     let shownMode = null;
+    el.dataset.level = config.rooms.find((r) => r.id === cfg.room)?.level;
+    el.hidden = el.dataset.level !== currentLevel;
     list.append(el);
     rows.push(() => {
       const s = state.acs[cfg.id];
@@ -133,6 +142,8 @@ export async function bootIsland(root) {
     };
     el.addEventListener('pointerup', finish);
     el.addEventListener('pointercancel', finish);
+    el.dataset.level = config.rooms.find((r) => r.id === cfg.room)?.level;
+    el.hidden = el.dataset.level !== currentLevel;
     list.append(el);
     rows.push(() => {
       const s = state.lights[cfg.id];

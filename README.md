@@ -219,6 +219,11 @@ The session is kept in the iPhone's Keychain and never leaves the device.
 
 ## Make it your home
 
+The [Loft 113 model](docs/loft113.md) includes separate ground/patio and bedroom floors,
+photo-based furniture placement and a smart-device inventory. Its dimensions are estimates,
+with sources and remaining uncertainties available in **Plan details**. **Open Home Map…**
+opens a resizable map window; the editor's floor selector keeps edits on the selected storey.
+
 Right-click the icon and choose **Edit Home…**
 
 <p align="center">
@@ -324,6 +329,7 @@ Environment variables understood by the app:
 | `HOUSE_WEB_DIR=/path/to/dist` | Load the UI from another folder |
 | `HOUSE_DATA_DIR=/some/folder` | Keep plan, session and log there instead of Application Support, and do not persist panel state. Handy for a clean test run |
 | `HOUSE_OPEN_ON_LAUNCH=1` | Open the panel at launch |
+| `HOUSE_OPEN_MAP=1` | Open the resizable home map at launch |
 | `HOUSE_OPEN_EDITOR=1` | Open the editor at launch (`connections`, `smartlife`, `homeassistant`, `hue` or `homekit` opens it on that screen) |
 | `HOUSE_OPEN_DEVICE=<id>` | Start the panel on that light's or AC's sheet |
 | `HOUSE_PIN=1` | Keep the panel open when it loses focus |
@@ -332,7 +338,7 @@ Environment variables understood by the app:
 | `HOUSE_ISLAND_EXPANDED=1` | Keep the island open |
 | `HOUSE_OPEN_PAIRING=1` | Open the Pair iPhone window at launch |
 | `HOUSE_COMPUTER_NAME="Studio Mac"` | The name paired iPhones see, instead of the Mac's own (screenshots) |
-| `HOUSE_SNAPSHOT_DIR=/some/folder` | Write `panel.png` and `island.png` there a few seconds after launch |
+| `HOUSE_SNAPSHOT_DIR=/some/folder` | Write `panel.png`, `island.png` and (when open) `map.png` there a few seconds after launch |
 | `HOUSE_RENDER_HIDDEN=1` | Keep drawing while the screen is locked, for unattended captures |
 | `HOUSE_OPEN_AGENT=1` | Open the AI Access window at launch (`start` also starts the link) |
 | `HOUSE_AGENT_REACH=local` | Serve AI Access on this Mac only for one run (`internet` for the tunnel) |

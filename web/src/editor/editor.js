@@ -17,9 +17,9 @@ const sv = (tag, attrs = {}, ...kids) => {
   return el;
 };
 
-const KEYS = { room: 'rooms', light: 'lights', ac: 'acs', furniture: 'furniture', opening: 'openings', scene: 'scenes' };
-const TITLES = { room: 'Rooms', light: 'Lights', ac: 'Air conditioners', furniture: 'Furniture', opening: 'Doors & windows', scene: 'Scenes' };
-const FLOOR_FILL = { oak: '#4a3d2e', walnut: '#3c2f28', tile: '#39424b', stone: '#30353c' };
+const KEYS = { room: 'rooms', light: 'lights', ac: 'acs', device: 'devices', furniture: 'furniture', opening: 'openings', scene: 'scenes' };
+const TITLES = { room: 'Rooms', light: 'Lights', ac: 'Air conditioners', device: 'Mapped devices', furniture: 'Furniture', opening: 'Doors & windows', scene: 'Scenes' };
+const FLOOR_FILL = { oak: '#4a3d2e', walnut: '#3c2f28', tile: '#39424b', stone: '#30353c', carpet: '#514941', deck: '#635545', grass: '#40543b' };
 const WALLS = ['north', 'east', 'south', 'west'];
 const SCENE_ICONS = ['sun', 'sofa', 'film', 'moon', 'door', 'table', 'bed', 'tv', 'sparkles'];
 const REGIONS = [
@@ -43,6 +43,10 @@ export async function bootEditor(root) {
   let dirty = false;
   let world = null;
   let previewLights = true;
+  let activeLevel = doc.defaultLevel || doc.levels?.[0]?.id || 'main';
+  const itemLevel = (item) => item.level || doc.rooms.find((r) => r.id === item.room)?.level || doc.levels?.[0]?.id || 'main';
+  const onLevel = (item) => itemLevel(item) === activeLevel;
+  const floorRooms = () => doc.rooms.filter(onLevel);
   const undo = [];
   const redo = [];
   const tuya = {
@@ -75,11 +79,20 @@ export async function bootEditor(root) {
   const plan = sv('svg', { class: 'plan', tabindex: 0 });
   const inspector = h('div.inspector');
   const previewHost = h('div.preview');
+  const levelSelect = h('select.editor-level', { 'aria-label': 'Edit floor', onchange: () => { activeLevel = levelSelect.value; sel = { kind: 'home' }; renderSidebar(); renderPlan(); renderInspector(); schedulePreview(0); } });
+  function refreshLevels() {
+    const levels = doc.levels || [{ id: 'main', name: 'Ground' }];
+    if (!levels.some((l) => l.id === activeLevel)) activeLevel = doc.defaultLevel || levels[0].id;
+    levelSelect.replaceChildren(...levels.map((l) => h('option', { value: l.id }, l.name)));
+    levelSelect.value = activeLevel;
+    levelSelect.hidden = levels.length < 2;
+  }
+  refreshLevels();
   const previewToggle = h('button.chip', { onclick: () => { previewLights = !previewLights; schedulePreview(0); } });
 
   root.replaceChildren(h('div.editor',
     h('header.bar',
-      h('div.bar-title', icon('home', 17), nameInput),
+      h('div.bar-title', icon('home', 17), nameInput, levelSelect),
       h('div.bar-actions',
         h('button.btn', { title: 'Undo (⌘Z)', onclick: () => stepHistory(undo, redo) }, 'Undo'),
         h('button.btn', { title: 'Redo (⇧⌘Z)', onclick: () => stepHistory(redo, undo) }, 'Redo'),
@@ -115,6 +128,7 @@ export async function bootEditor(root) {
 
   function touch({ inspector: redrawInspector = true } = {}) {
     dirty = true;
+    refreshLevels();
     renderSidebar();
     renderPlan();
     if (redrawInspector) renderInspector();
@@ -124,6 +138,8 @@ export async function bootEditor(root) {
 
   function select(next) {
     sel = next;
+    const chosen = doc[KEYS[next.kind]]?.[next.index];
+    if (chosen && next.kind !== 'scene' && itemLevel(chosen) !== activeLevel) { activeLevel = itemLevel(chosen); refreshLevels(); schedulePreview(0); }
     lastSnapshotKey = null;
     renderSidebar();
     renderPlan();
@@ -180,10 +196,11 @@ export async function bootEditor(root) {
         onHover() {},
         onPick(t) {
           if (!t) return;
-          const index = doc[KEYS[t.kind]].findIndex((x) => x.id === t.id);
+          const index = doc[KEYS[t.kind]]?.findIndex((x) => x.id === t.id);
           if (index >= 0) select({ kind: t.kind, index });
         },
       });
+      world.setLevel(activeLevel);
       world.setInsets(6, 6);
       world.setRunning(true);
       const w = world;
@@ -199,13 +216,14 @@ export async function bootEditor(root) {
     if (kind === 'room') return [item.name || item.id, `${fix(item.rect[2])} × ${fix(item.rect[3])} m`];
     if (kind === 'light') return [item.name || item.id, `${roomName(item.room)} · ${item.type}`];
     if (kind === 'ac') return [item.name || item.id, `${roomName(item.room)} · ${item.wall} wall`];
+    if (kind === 'device') return [item.name || item.id, `${item.brand || ''} · mapped`];
     if (kind === 'furniture') return [item.type, roomName(roomAt(item.pos)?.id) || '—'];
     if (kind === 'opening') return [item.type || 'door', `${fix(Math.hypot(item.to[0] - item.from[0], item.to[1] - item.from[1]))} m`];
     return [item.name || item.id, `${Object.keys(item.lights || {}).length} rules`];
   }
 
   const roomName = (id) => doc.rooms.find((r) => r.id === id)?.name || id || '';
-  const roomAt = ([x, z]) => doc.rooms.find((r) => x >= r.rect[0] && x <= r.rect[0] + r.rect[2] && z >= r.rect[1] && z <= r.rect[1] + r.rect[3]);
+  const roomAt = ([x, z]) => floorRooms().find((r) => x >= r.rect[0] && x <= r.rect[0] + r.rect[2] && z >= r.rect[1] && z <= r.rect[1] + r.rect[3]);
 
   function renderSidebar() {
     const nodes = [h(`button.row.home-row${sel.kind === 'home' ? '.active' : ''}`, { onclick: () => select({ kind: 'home' }) },
@@ -214,9 +232,10 @@ export async function bootEditor(root) {
     for (const kind of Object.keys(KEYS)) {
       const items = doc[KEYS[kind]];
       nodes.push(h('div.group',
-        h('span', `${TITLES[kind]}`), h('span.n', items.length),
+        h('span', `${TITLES[kind]}`), h('span.n', kind === 'scene' ? items.length : items.filter(onLevel).length),
         h('button.add', { title: `Add to ${TITLES[kind].toLowerCase()}`, 'aria-label': `Add ${kind}`, onclick: () => add(kind) }, icon('plus', 14, 2.4))));
       items.forEach((item, index) => {
+        if (kind !== 'scene' && !onLevel(item)) return;
         const [name, sub] = rowLabel(kind, item);
         const active = sel.kind === kind && sel.index === index;
         nodes.push(h(`div.row${active ? '.active' : ''}`, { role: 'button', tabindex: 0, onclick: () => select({ kind, index }) },
@@ -232,32 +251,35 @@ export async function bootEditor(root) {
   }
 
   function uniqueId(base) {
-    const ids = new Set([...doc.rooms, ...doc.lights, ...doc.acs, ...doc.scenes].map((x) => x.id));
+    const ids = new Set([...doc.rooms, ...doc.lights, ...doc.acs, ...doc.devices, ...doc.scenes].map((x) => x.id));
     if (!ids.has(base)) return base;
     for (let i = 2; ; i++) if (!ids.has(`${base}${i}`)) return `${base}${i}`;
   }
 
   function add(kind) {
     snapshot();
-    const room = (sel.kind === 'room' && doc.rooms[sel.index]) || doc.rooms.find((r) => r.id === doc[KEYS[sel.kind]]?.[sel.index]?.room) || doc.rooms[0];
+    const room = (sel.kind === 'room' && doc.rooms[sel.index]) || doc.rooms.find((r) => r.id === doc[KEYS[sel.kind]]?.[sel.index]?.room) || floorRooms()[0];
     const center = room ? [fix(room.rect[0] + room.rect[2] / 2), fix(room.rect[1] + room.rect[3] / 2)] : [1, 1];
     const list = doc[KEYS[kind]];
     if (kind === 'room') {
-      const maxX = Math.max(0, ...doc.rooms.map((r) => r.rect[0] + r.rect[2]));
-      const minZ = Math.min(...doc.rooms.map((r) => r.rect[1]), 0);
-      list.push({ id: uniqueId('room'), name: 'New room', rect: [fix(maxX), fix(doc.rooms.length ? minZ : 0), 3, 3], floor: 'oak' });
+      const maxX = Math.max(0, ...floorRooms().map((r) => r.rect[0] + r.rect[2]));
+      const minZ = Math.min(...floorRooms().map((r) => r.rect[1]), 0);
+      list.push({ id: uniqueId('room'), name: 'New room', rect: [fix(maxX), fix(doc.rooms.length ? minZ : 0), 3, 3], floor: 'oak', level: activeLevel });
     } else if (kind === 'light') {
       if (!room) return toast('Add a room first', true);
       list.push({ id: uniqueId(`${room.id}.light`), name: 'New light', room: room.id, type: 'ceiling', pos: center, capabilities: [] });
     } else if (kind === 'ac') {
       if (!room) return toast('Add a room first', true);
       list.push({ id: uniqueId(`${room.id}.ac`), name: `${room.name} AC`, room: room.id, wall: 'north', pos: [center[0], room.rect[1]], y: 2.2 });
+    } else if (kind === 'device') {
+      if (!room) return toast('Add a room first', true);
+      list.push({ id: uniqueId(`${room.id}.device`), name: 'Mapped device', room: room.id, kind: 'sensor', model: 'sensor', brand: '', pos: center, status: 'unlinked' });
     } else if (kind === 'furniture') {
-      list.push({ type: 'sofa', pos: center, rot: 0 });
+      list.push({ type: 'sofa', pos: center, rot: 0, level: activeLevel });
     } else if (kind === 'opening') {
       if (!room) return toast('Add a room first', true);
       const z = room.rect[1] + room.rect[3];
-      list.push({ type: 'door', from: [fix(center[0] - 0.45), fix(z)], to: [fix(center[0] + 0.45), fix(z)] });
+      list.push({ type: 'door', level: activeLevel, from: [fix(center[0] - 0.45), fix(z)], to: [fix(center[0] + 0.45), fix(z)] });
     } else if (kind === 'scene') {
       list.push({ id: uniqueId('scene'), name: 'New scene', icon: 'sparkles', lights: { '*': { on: false } } });
     }
@@ -272,6 +294,7 @@ export async function bootEditor(root) {
       // Devices cannot outlive their room.
       doc.lights = doc.lights.filter((l) => l.room !== gone.id);
       doc.acs = doc.acs.filter((a) => a.room !== gone.id);
+      doc.devices = doc.devices.filter((d) => d.room !== gone.id);
     }
     if (kind === 'light' || kind === 'ac' || kind === 'room') {
       const ids = new Set([...doc.lights, ...doc.acs].map((d) => d.id));
@@ -286,7 +309,7 @@ export async function bootEditor(root) {
   /* ---------- plan (SVG) ---------- */
 
   function bounds() {
-    const rs = doc.rooms.length ? doc.rooms : [{ rect: [0, 0, 6, 4] }];
+    const rs = floorRooms().length ? floorRooms() : [{ rect: [0, 0, 6, 4] }];
     const minX = Math.min(...rs.map((r) => r.rect[0]));
     const minZ = Math.min(...rs.map((r) => r.rect[1]));
     const maxX = Math.max(...rs.map((r) => r.rect[0] + r.rect[2]));
@@ -308,6 +331,7 @@ export async function bootEditor(root) {
     ];
 
     doc.rooms.forEach((r, i) => {
+      if (!onLevel(r)) return;
       const [x, z, w, d] = r.rect;
       const g = sv('g', { class: `p-room${isSel('room', i) ? ' sel' : ''}`, 'data-kind': 'room', 'data-index': i },
         sv('rect', { x, y: z, width: w, height: d, fill: FLOOR_FILL[r.floor] || FLOOR_FILL.oak }),
@@ -317,18 +341,24 @@ export async function bootEditor(root) {
     });
 
     doc.furniture.forEach((f, i) => {
+      if (!onLevel(f)) return;
       if (!Array.isArray(f.pos)) return;
       const [w, d] = footprint(f);
       kids.push(sv('g', {
         class: `p-furn${isSel('furniture', i) ? ' sel' : ''}`, 'data-kind': 'furniture', 'data-index': i,
         transform: `translate(${f.pos[0]} ${f.pos[1]}) rotate(${-(f.rot || 0)})`,
       },
-        sv('rect', { x: -w / 2, y: -d / 2, width: w, height: d, rx: 0.06 }),
+        f.type === 'sectional'
+          ? sv('path', { d: `M${-w / 2} ${-d / 2}H${w / 2}V${-d / 2 + 0.95}H${-w / 2 + 0.95}V${d / 2}H${-w / 2}Z` })
+          : sv('rect', { x: -w / 2, y: -d / 2, width: w, height: d, rx: 0.06 }),
         // a tick marks the front of the piece
-        sv('path', { d: `M${-w / 4} ${d / 2}H${w / 4}`, class: 'front' })));
+        sv('path', { d: f.type === 'sectional'
+          ? `M${-w / 2 + 0.95} ${d / 2 - 0.2}V${-d / 2 + 0.95}H${w / 2 - 0.2}`
+          : `M${-w / 4} ${d / 2}H${w / 4}`, class: 'front' })));
     });
 
     doc.openings.forEach((o, i) => {
+      if (!onLevel(o)) return;
       kids.push(sv('line', {
         class: `p-open ${o.type || 'door'}${isSel('opening', i) ? ' sel' : ''}`, 'data-kind': 'opening', 'data-index': i,
         x1: o.from[0], y1: o.from[1], x2: o.to[0], y2: o.to[1],
@@ -336,6 +366,7 @@ export async function bootEditor(root) {
     });
 
     doc.acs.forEach((a, i) => {
+      if (!onLevel(a)) return;
       const rot = { north: 0, east: 90, south: 180, west: 270 }[a.wall] || 0;
       kids.push(sv('g', {
         class: `p-ac${isSel('ac', i) ? ' sel' : ''}`, 'data-kind': 'ac', 'data-index': i,
@@ -345,6 +376,7 @@ export async function bootEditor(root) {
     });
 
     doc.lights.forEach((l, i) => {
+      if (!onLevel(l)) return;
       const g = sv('g', {
         class: `p-light ${l.type}${isSel('light', i) ? ' sel' : ''}${isLinked(l) ? ' linked' : ''}`, 'data-kind': 'light', 'data-index': i,
         transform: `translate(${l.pos[0]} ${l.pos[1]}) rotate(${-(l.rot || 0)})`,
@@ -358,6 +390,12 @@ export async function bootEditor(root) {
       kids.push(g);
     });
 
+    doc.devices.forEach((d, i) => {
+      if (!onLevel(d)) return;
+      kids.push(sv('g', { class: `p-device${isSel('device', i) ? ' sel' : ''}`, 'data-kind': 'device', 'data-index': i,
+        transform: `translate(${d.pos[0]} ${d.pos[1]})` }, sv('rect', { x: -0.12, y: -0.12, width: 0.24, height: 0.24, rx: 0.04 }),
+        sv('title', {}, document.createTextNode(d.name))));
+    });
     if (sel.kind === 'room' && doc.rooms[sel.index]) {
       const [x, z, w, d] = doc.rooms[sel.index].rect;
       kids.push(sv('circle', { cx: x + w, cy: z + d, r: 0.16, class: 'p-handle', 'data-kind': 'resize', 'data-index': sel.index }));
@@ -413,9 +451,10 @@ export async function bootEditor(root) {
       drag.riders = [
         ...doc.lights.filter((l) => l.room === item.id).map((o) => ({ o, pos: [...o.pos] })),
         ...doc.acs.filter((a) => a.room === item.id).map((o) => ({ o, pos: [...o.pos] })),
-        ...doc.furniture.filter((f) => Array.isArray(f.pos) && inside(f.pos)).map((o) => ({ o, pos: [...o.pos] })),
+        ...doc.devices.filter((d) => d.room === item.id).map((o) => ({ o, pos: [...o.pos] })),
+        ...doc.furniture.filter((f) => onLevel(f) && Array.isArray(f.pos) && inside(f.pos)).map((o) => ({ o, pos: [...o.pos] })),
       ];
-      drag.openings = doc.openings.filter((o) => inside(o.from) && inside(o.to)).map((o) => ({ o, from: [...o.from], to: [...o.to] }));
+      drag.openings = doc.openings.filter((o) => onLevel(o) && inside(o.from) && inside(o.to)).map((o) => ({ o, from: [...o.from], to: [...o.to] }));
     } else if (kind === 'opening') {
       drag.from = [...item.from];
       drag.to = [...item.to];
@@ -453,7 +492,7 @@ export async function bootEditor(root) {
       snapAC(item, [px, pz]);
     } else {
       item.pos = [fix(drag.pos[0] + dx), fix(drag.pos[1] + dz)];
-      if (drag.kind === 'light') {
+      if (drag.kind === 'light' || drag.kind === 'device') {
         const room = roomAt(item.pos);
         if (room) item.room = room.id;
       }
@@ -550,13 +589,16 @@ export async function bootEditor(root) {
       });
       nodes.push(section('Light',
         bind('Name', text(), prop(item, 'name', '')),
-        row(bind('Room', choice(doc.rooms.map((r) => [r.id, r.name || r.id])), { ...prop(item, 'room'), event: 'change' }),
+        row(bind('Room', choice(floorRooms().map((r) => [r.id, r.name || r.id])), { ...prop(item, 'room'), event: 'change' }),
           bind('Fixture', choice(LIGHT_KINDS), { ...prop(item, 'type'), event: 'change' }))),
       section('Position, m',
         row(bind('X', number(), { ...at(item, 'pos', 0), parse: parseNum }), bind('Z', number(), { ...at(item, 'pos', 1), parse: parseNum })),
         row(bind('Height (auto if empty)', number(), { ...optional(item, 'y'), parse: optNum }),
           bind('Rotation, °', number(15), { ...prop(item, 'rot', 0), parse: parseNum })),
-        item.type === 'strip' ? bind('Strip length, m', number(0.1), { ...prop(item, 'length', 1), parse: parseNum }) : null),
+        ['strip', 'string'].includes(item.type) ? bind('Length, m', number(0.1), { ...prop(item, 'length', 1), parse: parseNum }) : null,
+        item.type === 'rope' ? row(
+          bind('Rope width, m', number(0.1), { get: () => item.size?.[0] ?? 2, set: (v) => { item.size = [v, item.size?.[1] ?? 2.2]; }, parse: parseNum }),
+          bind('Rope depth, m', number(0.1), { get: () => item.size?.[1] ?? 2.2, set: (v) => { item.size = [item.size?.[0] ?? 2, v]; }, parse: parseNum })) : null),
       section('What it can do',
         h('div.checks',
           bind('Dimming', h('input', { type: 'checkbox' }), { ...cap('brightness'), event: 'change' }),
@@ -568,7 +610,7 @@ export async function bootEditor(root) {
       head(item.name || item.id, `id: ${item.id}`);
       nodes.push(section('Air conditioner',
         bind('Name', text(), prop(item, 'name', '')),
-        row(bind('Room', choice(doc.rooms.map((r) => [r.id, r.name || r.id])), { ...prop(item, 'room'), event: 'change' }),
+        row(bind('Room', choice(floorRooms().map((r) => [r.id, r.name || r.id])), { ...prop(item, 'room'), event: 'change' }),
           bind('Mounted on wall', choice(WALLS), { ...prop(item, 'wall', 'north'), event: 'change' }))),
       section('Position, m',
         row(bind('X', number(), { ...at(item, 'pos', 0), parse: parseNum }), bind('Z', number(), { ...at(item, 'pos', 1), parse: parseNum })),
@@ -581,6 +623,16 @@ export async function bootEditor(root) {
         h('p.note', 'Dragging the unit on the plan snaps it to the nearest wall of its room.')),
       links.deviceSection(item, 'ac', linkHooks),
       links.sensorSection(item, linkHooks));
+    } else if (kind === 'device') {
+      head(item.name || item.id, 'Mapped inventory · no live connection');
+      nodes.push(section('Device placement',
+        bind('Name', text(), prop(item, 'name')),
+        bind('Brand', text(), prop(item, 'brand')),
+        bind('Room', choice(floorRooms().map((r) => [r.id, r.name])), { ...prop(item, 'room'), event: 'change' }),
+        bind('Model', choice([['', 'Position only'], ...FURNITURE_TYPES.map((t) => [t, t])]), { ...prop(item, 'model', ''), event: 'change' }),
+        row(bind('X', number(), { ...at(item, 'pos', 0), parse: parseNum }), bind('Z', number(), { ...at(item, 'pos', 1), parse: parseNum })),
+        row(bind('Height, m', number(), { ...prop(item, 'y', 0), parse: parseNum }), bind('Rotation, °', number(15), { ...prop(item, 'rot', 0), parse: parseNum })),
+        bind('Placement notes', text(), prop(item, 'notes', ''))));
     } else if (kind === 'furniture') {
       head(item.type, 'Decoration only');
       nodes.push(section('Furniture',
@@ -588,6 +640,8 @@ export async function bootEditor(root) {
         row(bind('X', number(), { ...at(item, 'pos', 0), parse: parseNum }), bind('Z', number(), { ...at(item, 'pos', 1), parse: parseNum })),
         row(bind('Rotation, °', number(15), { ...prop(item, 'rot', 0), parse: parseNum }),
           bind('Width, m', number(0.1), { ...optional(item, 'width'), parse: optNum })),
+        row(bind('Depth, m', number(0.1), { ...optional(item, 'depth'), parse: optNum }), bind('Height, m', number(0.1), { ...optional(item, 'height'), parse: optNum })),
+        bind('Elevation above floor, m', number(0.05), { ...prop(item, 'y', 0), parse: parseNum }),
         bind('Colour (hex, optional)', text(), optional(item, 'color')),
         h('p.note', 'The short line on the plan marks the front. Rotation 0° faces south (towards the bottom of the plan).')));
     } else if (kind === 'opening') {
